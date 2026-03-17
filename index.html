@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Carta da Sorte</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/base/layout.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/desktop/desktop-layout.css">
+	<link rel="stylesheet" href="css/mobile/mobile-layout.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="game-stage">
+        <div id="game-container">
+            <img id="game-background" src="assets/temple_wall.webp" alt="">
+
+            <div id="game-ui">
+                <div class="templo-bg"></div>
+
+                <div class="torch torch-left">
+                    <div class="fogo"></div>
+                </div>
+
+                <div class="torch torch-right">
+                    <div class="fogo"></div>
+                </div>
+
+                <div class="container">
+                    <div class="area-jogo">
+                        <div id="bet-toast-wrapper" class="bet-toast-wrapper" aria-live="polite">
+                            <div id="bet-toast" class="bet-toast">
+                                <div class="bet-toast-particles" aria-hidden="true"></div>
+                                <div class="bet-toast-content"></div>
+                            </div>
+                        </div>
+
+                        <div id="jackpot-container">
+                            <img src="assets/placa_jackpot.webp" id="jackpot-placa" alt="Placa de jackpot">
+                            <div id="jackpot-valor">0</div>
+                        </div>
+
+                        <div id="jackpot-message" class="jackpot-message" aria-live="assertive">VOCE GANHOU!</div>
+
+                        <div class="painel">
+                            <div class="placas">
+                                <div class="placa">
+                                    <img src="assets/placa_creditos.png" alt="Placa de creditos">
+                                    <span id="creditos" class="numero">30</span>
+                                </div>
+
+                                <div class="bet-control">
+                                    <button id="bet-minus" class="bet-btn" type="button" aria-label="Diminuir aposta">
+                                        <img src="assets/ui/bet-minus.webp" alt="">
+                                    </button>
+
+                                    <div class="placa placa-aposta">
+                                        <img src="assets/placa_aposta.png" alt="Placa de aposta">
+                                        <span id="aposta" class="numero">R$ 1,00</span>
+                                    </div>
+
+                                    <button id="bet-plus" class="bet-btn" type="button" aria-label="Aumentar aposta">
+                                        <img src="assets/ui/bet-plus.webp" alt="">
+                                    </button>
+                                </div>
+
+                                <div class="placa">
+                                    <img src="assets/placa_ganho.png" alt="Placa de ganho">
+                                    <span id="ganho" class="numero">0</span>
+                                </div>
+                            </div>
+
+                            <div class="carta">
+                                <div class="carta-inner">
+                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
+                                </div>
+                            </div>
+
+                            <div class="carta">
+                                <div class="carta-inner">
+                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
+                                </div>
+                            </div>
+
+                            <div class="carta">
+                                <div class="carta-inner">
+                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controles">
+                            <div class="botoes">
+                                <img src="assets/spin.png" class="btn-girar" alt="Girar" onclick="jogar()">
+                                <img src="assets/giro.webp" class="btn-auto" alt="Auto giro" onclick="toggleAutoGiro()">
+                            </div>
+
+                            <div id="msg-creditos" class="msg-creditos">CREDITOS INSUFICIENTES</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="engine/slotConfig.js"></script>
+    <script src="engine/slotEngine.js"></script>
+    <script src="js/script.js"></script>
+	<script>
+function verificarOrientacao(){
+    if(window.innerHeight > window.innerWidth){
+        document.body.innerHTML = `
+        <div style="
+        width:100vw;
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#000;
+        color:#ffd66b;
+        font-size:24px;
+        text-align:center;
+        font-family:serif;
+        ">
+        🔄 Gire o celular para jogar
+        </div>`;
+    }
+}
+
+window.addEventListener("resize", verificarOrientacao);
+window.addEventListener("load", verificarOrientacao);
+</script>
+
+<script>
+const BASE_WIDTH = 1280;
+const BASE_HEIGHT = 720;
+
+function ajustarEscalaJogo(){
+
+    const container = document.getElementById("game-container");
+
+    const larguraTela = window.innerWidth;
+    const alturaTela = window.innerHeight;
+
+    const escalaX = larguraTela / BASE_WIDTH;
+    const escalaY = alturaTela / BASE_HEIGHT;
+
+    const escala = Math.min(escalaX, escalaY);
+
+    const larguraFinal = BASE_WIDTH * escala;
+    const alturaFinal = BASE_HEIGHT * escala;
+
+    container.style.transform = `scale(${escala})`;
+
+    container.style.left = ((larguraTela - larguraFinal) / 2) + "px";
+    container.style.top = ((alturaTela - alturaFinal) / 2) + "px";
+}
+
+window.addEventListener("resize", ajustarEscalaJogo);
+window.addEventListener("load", ajustarEscalaJogo);
+</script>
+</body>
+</html>

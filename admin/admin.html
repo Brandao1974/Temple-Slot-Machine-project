@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<title>Admin - Slot Machine</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="menu">
+<h2>ADMIN</h2>
+<ul>
+<li data-page="dashboard">Dashboard</li>
+<li data-page="rtp">RTP</li>
+<li data-page="simbolos">Probabilidade</li>
+<li data-page="premios">Premios</li>
+<li data-page="risco">Controle de Risco</li>
+<li data-page="jackpot">Configuracao de Jackpot</li>
+<li data-page="mensagem-aposta">Msg Aposta</li>
+<li data-page="creditos">Creditos</li>
+<li data-page="historico">Historico</li>
+<li data-page="graficos">Graficos</li>
+<li data-page="simulacao">Simulacao da Maquina</li>
+</ul>
+</aside>
+
+<main class="conteudo">
+<section id="dashboard" class="page">
+<h1>Dashboard</h1>
+<div class="cards">
+<div class="card"><h3>Giros</h3><span id="totalGiros">0</span></div>
+<div class="card"><h3>Premios Pagos</h3><span id="premiosPagos">0</span></div>
+<div class="card"><h3>Lucro da Maquina</h3><span id="lucroCasa">0</span></div>
+<div class="card"><h3>RTP Real</h3><span id="rtpReal">0%</span></div>
+<div class="card"><h3>Taxa de Vitoria</h3><span id="taxaVitoria">0%</span></div>
+</div>
+<h2>Painel Financeiro</h2>
+<div class="cards">
+<div class="card"><h3>Banca da Maquina</h3><span id="bancaMaquina">0</span></div>
+<div class="card"><h3>Entrada Manual</h3><span id="dinheiroInserido">0</span></div>
+<div class="card"><h3>Saida Manual + Premios</h3><span id="dinheiroPago">0</span></div>
+<div class="card"><h3>Resultado Operacional</h3><span id="lucroFinanceiro">0</span></div>
+<div class="card"><h3>Total de Apostas</h3><span id="totalApostasFinanceiro">0</span></div>
+<div class="card"><h3>Total de Premios</h3><span id="totalPremiosFinanceiro">0</span></div>
+<div class="card"><h3>RTP Financeiro</h3><span id="rtpFinanceiro">0%</span></div>
+<div class="card"><h3>Total de Giros</h3><span id="totalSpinsFinanceiro">0</span></div>
+</div>
+<div class="acoes-creditos">
+<button onclick="resetarEstatisticasMaquina()" class="secundario">Resetar Estatisticas</button>
+</div>
+<h2>Resumo Operacional</h2>
+<div class="cards">
+<div class="card"><h3>Saldo Atual</h3><span id="saldoAtual">0</span></div>
+<div class="card"><h3>Total Apostado</h3><span id="totalApostado">0</span></div>
+<div class="card"><h3>Lucro Historico</h3><span id="lucroHistorico">0</span></div>
+<div class="card"><h3>Estado</h3><span id="estadoResumo">Sem giros</span></div>
+</div>
+<h2>Log do Dia</h2>
+<div class="cards">
+<div class="card"><h3>Data</h3><span id="logDataHoje">-</span></div>
+<div class="card"><h3>Lucro Hoje</h3><span id="logLucroHoje">0</span></div>
+<div class="card"><h3>Total Apostas</h3><span id="logApostasHoje">0</span></div>
+<div class="card"><h3>Total Premios</h3><span id="logPremiosHoje">0</span></div>
+</div>
+<h2>Controle de Risco</h2>
+<div class="cards">
+<div class="card"><h3>Max Premio / Banca</h3><span id="riscoPercentualAtual">0%</span></div>
+<div class="card"><h3>Max Premio / Giro</h3><span id="riscoSpinAtual">0</span></div>
+<div class="card"><h3>Max Ganho / Sessao</h3><span id="riscoSessaoAtual">0</span></div>
+<div class="card"><h3>Ganho Atual da Sessao</h3><span id="ganhoSessaoAtual">0</span></div>
+</div>
+</section>
+
+<section id="rtp" class="page">
+<h1>Configuracao RTP</h1>
+<label for="rtpInput">RTP (%)</label>
+<input id="rtpInput" type="number" min="1" max="100" step="0.1" value="92">
+<button onclick="salvarRTP()">Salvar</button>
+</section>
+
+<section id="simbolos" class="page">
+<h1>Probabilidade dos Simbolos</h1>
+<table>
+<tr><th>Simbolo</th><th>Peso</th><th>Porcentagem</th></tr>
+<tr><td>MAP</td><td><input id="pesoMap" type="number" min="1"></td><td><span id="porcentagemMap">0%</span></td></tr>
+<tr><td>COMPASS</td><td><input id="pesoCompass" type="number" min="1"></td><td><span id="porcentagemCompass">0%</span></td></tr>
+<tr><td>GEM</td><td><input id="pesoGem" type="number" min="1"></td><td><span id="porcentagemGem">0%</span></td></tr>
+<tr><td>IDOL</td><td><input id="pesoIdol" type="number" min="1"></td><td><span id="porcentagemIdol">0%</span></td></tr>
+<tr><td>RELIC</td><td><input id="pesoRelic" type="number" min="1"></td><td><span id="porcentagemRelic">0%</span></td></tr>
+<tr><td>CROWN</td><td><input id="pesoCrown" type="number" min="1"></td><td><span id="porcentagemCrown">0%</span></td></tr>
+<tr><td>TEMPLEEYE</td><td><input id="pesoTempleEye" type="number" min="1"></td><td><span id="porcentagemTempleEye">0%</span></td></tr>
+</table>
+<button onclick="salvarSimbolos()">Salvar</button>
+</section>
+
+<section id="premios" class="page">
+<h1>Premios</h1>
+<label>MAP</label>
+<input id="premioMap" type="number" min="0">
+<label>COMPASS</label>
+<input id="premioCompass" type="number" min="0">
+<label>GEM</label>
+<input id="premioGem" type="number" min="0">
+<label>IDOL</label>
+<input id="premioIdol" type="number" min="0">
+<label>RELIC</label>
+<input id="premioRelic" type="number" min="0">
+<label>CROWN</label>
+<input id="premioCrown" type="number" min="0">
+<label>TEMPLEEYE</label>
+<input id="premioTempleEye" type="number" min="0">
+<button onclick="salvarPremios()">Salvar</button>
+</section>
+
+<section id="risco" class="page">
+<h1>Controle de Risco</h1>
+<label for="percentualMaxPremio">Percentual maximo de premio relativo a banca (%)</label>
+<input id="percentualMaxPremio" type="number" min="0" max="100" step="0.1">
+<label for="maxWinPerSpin">Limite maximo de premio por giro</label>
+<input id="maxWinPerSpin" type="number" min="0" step="1">
+<label for="maxWinPerSession">Limite maximo de ganho por sessao</label>
+<input id="maxWinPerSession" type="number" min="0" step="1">
+<div class="acoes-creditos">
+<button onclick="salvarControleRisco()">Salvar controle</button>
+<button onclick="resetarSessaoJogador()" class="secundario">Resetar sessao</button>
+</div>
+</section>
+
+<section id="jackpot" class="page">
+<h1>Configuracao de Jackpot</h1>
+<label for="jackpotMin">jackpotMin</label>
+<input id="jackpotMin" type="number" min="0">
+<label for="jackpotMax">jackpotMax</label>
+<input id="jackpotMax" type="number" min="0">
+<label for="jackpotContributionPercent">jackpotContributionPercent (%)</label>
+<input id="jackpotContributionPercent" type="number" min="0" max="100" step="0.1">
+<button onclick="salvarConfiguracaoJackpot()">Salvar jackpot</button>
+</section>
+
+<section id="mensagem-aposta" class="page">
+<h1>Configuracao de Mensagem de Aposta</h1>
+<label for="mensagemLinha1">mensagemLinha1</label>
+<input id="mensagemLinha1" type="text" maxlength="80">
+<label for="mensagemLinha2">mensagemLinha2</label>
+<input id="mensagemLinha2" type="text" maxlength="80">
+<label for="tempoMensagem">tempoMensagem (ms)</label>
+<input id="tempoMensagem" type="number" min="200" step="100">
+<button onclick="salvarMensagemAposta()">Salvar mensagem</button>
+</section>
+
+<section id="creditos" class="page">
+<h1>Ajuste de Creditos</h1>
+<div class="cards">
+<div class="card">
+<h3>Saldo Atual</h3>
+<span id="saldoEditor">0</span>
+</div>
+</div>
+<label for="ajusteCredito">Valor do ajuste</label>
+<input id="ajusteCredito" type="number" min="1" step="1" value="10">
+<div class="acoes-creditos">
+<button onclick="adicionarCreditos()">Adicionar creditos</button>
+<button onclick="removerCreditos()" class="secundario">Remover creditos</button>
+</div>
+</section>
+
+<section id="historico" class="page">
+<h1>Historico</h1>
+<table>
+<thead>
+<tr><th>Data</th><th>Lucro</th><th>Apostas</th><th>Premios</th></tr>
+</thead>
+<tbody id="historicoDiarioBody">
+<tr><td colspan="4">Sem registros diarios.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="graficos" class="page">
+<h1>Graficos</h1>
+<div class="cards graficos-cards">
+<div class="card"><h3>Lucro ao Longo do Tempo</h3><canvas id="graficoLucro"></canvas></div>
+<div class="card"><h3>RTP ao Longo do Tempo</h3><canvas id="graficoRtp"></canvas></div>
+<div class="card"><h3>Distribuicao de Premios</h3><canvas id="graficoPremios"></canvas></div>
+</div>
+</section>
+
+<section id="simulacao" class="page">
+<h1>Simulacao da Maquina</h1>
+<div class="simulacao-grid">
+<div class="card">
+<h3>Parametros</h3>
+<label for="simulacaoSpins">Quantidade de giros</label>
+<select id="simulacaoSpins">
+<option value="10000">10.000</option>
+<option value="50000">50.000</option>
+<option value="100000">100.000</option>
+</select>
+<label for="simulacaoAposta">Valor da aposta</label>
+<input id="simulacaoAposta" type="number" min="0.01" step="0.01" value="1">
+<div class="acoes-creditos">
+<button id="rodarSimulacaoBtn" type="button" onclick="rodarSimulacao()">Rodar Simulacao</button>
+</div>
+<p id="simulacaoStatus" class="simulacao-status">Pronta para executar usando a configuracao atual da maquina.</p>
+</div>
+
+<div class="card">
+<h3>Resumo da simulacao</h3>
+<div class="cards simulacao-cards">
+<div class="card"><h3>Giros</h3><span id="simulacaoTotalGiros">0</span></div>
+<div class="card"><h3>Total Apostado</h3><span id="simulacaoTotalApostado">0</span></div>
+<div class="card"><h3>Total Pago</h3><span id="simulacaoTotalPago">0</span></div>
+<div class="card"><h3>RTP</h3><span id="simulacaoRtp">0%</span></div>
+<div class="card"><h3>Lucro</h3><span id="simulacaoLucro">0</span></div>
+<div class="card"><h3>Taxa de Vitoria</h3><span id="simulacaoTaxaVitoria">0%</span></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Estatisticas de eventos</h3>
+<div class="cards simulacao-cards">
+<div class="card"><h3>Vitorias Pequenas</h3><span id="simulacaoVitoriasPequenas">0</span></div>
+<div class="card"><h3>Vitorias Medias</h3><span id="simulacaoVitoriasMedias">0</span></div>
+<div class="card"><h3>Vitorias Grandes</h3><span id="simulacaoVitoriasGrandes">0</span></div>
+<div class="card"><h3>Jackpots</h3><span id="simulacaoJackpots">0</span></div>
+<div class="card"><h3>Bonus</h3><span id="simulacaoBonus">0</span></div>
+<div class="card"><h3>Premio Medio</h3><span id="simulacaoPremioMedio">0</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+</div>
+
+<script src="../engine/slotConfig.js"></script>
+<script src="../engine/slotEngine.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>

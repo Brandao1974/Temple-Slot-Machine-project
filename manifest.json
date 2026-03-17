@@ -1,0 +1,9 @@
+{
+  "name": "Carta da Sorte",
+  "short_name": "Cartas",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": []
+}

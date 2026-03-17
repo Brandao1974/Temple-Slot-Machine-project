@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<title>Laboratório de Slot</title>
+<script src="../engine/slotConfig.js"></script>
+<script src="../engine/slotEngine.js"></script>
+
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+button{
+padding:10px 20px;
+font-size:18px;
+margin:10px;
+cursor:pointer;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+margin-top:30px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+}
+
+canvas{
+margin-top:30px;
+background:#020617;
+max-width:100%;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Laboratório da Máquina</h1>
+
+<button onclick="simular(1000)">1000</button>
+<button onclick="simular(10000)">10000</button>
+<button onclick="simular(100000)">100000</button>
+<button onclick="resetar()">RESET</button>
+
+<div class="grid">
+<div class="card"><h3>Giros</h3><span id="giros">0</span></div>
+<div class="card"><h3>Apostado</h3><span id="apostado">0</span></div>
+<div class="card"><h3>Pagos</h3><span id="pagos">0</span></div>
+<div class="card"><h3>Lucro Casa</h3><span id="lucro">0</span></div>
+<div class="card"><h3>RTP</h3><span id="rtp">0%</span></div>
+<div class="card"><h3>Hit Rate</h3><span id="hit">0%</span></div>
+</div>
+
+<canvas id="grafico" width="800" height="200"></canvas>
+
+<script>
+let stats = {
+giros: 0,
+apostado: 0,
+pagos: 0,
+vitorias: 0
+};
+
+let historicoRTP = [];
+const STORAGE_KEYS = [
+"machineFinance",
+"machineStats",
+"playerSession",
+"saldo"
+];
+const storageSnapshot = capturarSnapshotStorage();
+
+function capturarSnapshotStorage(){
+    const snapshot = {};
+
+    STORAGE_KEYS.forEach((key) => {
+        snapshot[key] = window.localStorage.getItem(key);
+    });
+
+    return snapshot;
+}
+
+function restaurarSnapshotStorage(snapshot){
+    STORAGE_KEYS.forEach((key) => {
+        const value = snapshot[key];
+        if(value === null){
+            window.localStorage.removeItem(key);
+            return;
+        }
+
+        window.localStorage.setItem(key, value);
+    });
+}
+
+function inicializarAmbienteSimulacao(){
+    window.localStorage.setItem("saldo", "30");
+    window.localStorage.setItem("machineStats", JSON.stringify({
+        giros: 0,
+        apostado: 0,
+        premios: 0,
+        lucroCasa: 0,
+        vitorias: 0
+    }));
+    window.localStorage.setItem("machineFinance", JSON.stringify({
+        moneyIn: 0,
+        moneyOut: 0,
+        bancaMaquina: 200,
+        totalApostas: 0,
+        totalPremios: 0,
+        totalSpins: 0
+    }));
+    window.localStorage.setItem("playerSession", JSON.stringify({
+        saldoInicialSessao: 30,
+        saldoAtual: 30,
+        premiosSessaoAcumulados: 0,
+        ganhosSessao: 0
+    }));
+    window.refreshSlotConfig();
+    window.refreshMachineFinance();
+    window.refreshPlayerSession();
+}
+
+function girar(){
+    window.incrementarTotalSpins();
+    window.registrarAposta(SLOT_CONFIG.custoJogada);
+    const resultado = SLOT_ENGINE.girar({ persistStats: false });
+    let premioPago = 0;
+
+    if(resultado.premio > 0){
+        const pagamento = window.registrarPremio(resultado.premio);
+        if(pagamento.pago){
+            premioPago = resultado.premio;
+            if(typeof window.registrarGanhoSessao === "function"){
+                window.registrarGanhoSessao(premioPago);
+            }
+        }
+    }
+
+    if(premioPago > 0){
+        stats.vitorias++;
+    }
+
+    return premioPago;
+}
+
+function simular(qtd){
+    for(let i = 0; i < qtd; i++){
+        stats.giros++;
+        stats.apostado += SLOT_CONFIG.custoJogada;
+        stats.pagos += girar();
+        historicoRTP.push(stats.apostado > 0 ? (stats.pagos / stats.apostado) * 100 : 0);
+    }
+
+    atualizar();
+    desenharGrafico();
+}
+
+function atualizar(){
+    const lucro = stats.apostado - stats.pagos;
+    const rtp = stats.apostado > 0 ? (stats.pagos / stats.apostado) * 100 : 0;
+    const hit = stats.giros > 0 ? (stats.vitorias / stats.giros) * 100 : 0;
+
+    document.getElementById("giros").innerText = stats.giros;
+    document.getElementById("apostado").innerText = stats.apostado;
+    document.getElementById("pagos").innerText = stats.pagos;
+    document.getElementById("lucro").innerText = lucro;
+    document.getElementById("rtp").innerText = `${rtp.toFixed(2)}%`;
+    document.getElementById("hit").innerText = `${hit.toFixed(2)}%`;
+}
+
+function desenharGrafico(){
+    const canvas = document.getElementById("grafico");
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "yellow";
+    ctx.beginPath();
+
+    historicoRTP.forEach((valor, index) => {
+        const x = historicoRTP.length > 1 ? index * (canvas.width / (historicoRTP.length - 1)) : 0;
+        const y = Math.max(0, Math.min(canvas.height, canvas.height - (valor * 1.5)));
+        if(index === 0){
+            ctx.moveTo(x, y);
+        }else{
+            ctx.lineTo(x, y);
+        }
+    });
+
+    ctx.stroke();
+}
+
+function resetar(){
+    stats = { giros: 0, apostado: 0, pagos: 0, vitorias: 0 };
+    historicoRTP = [];
+    restaurarSnapshotStorage(storageSnapshot);
+    inicializarAmbienteSimulacao();
+    atualizar();
+    desenharGrafico();
+}
+
+window.addEventListener("beforeunload", () => {
+    restaurarSnapshotStorage(storageSnapshot);
+});
+
+inicializarAmbienteSimulacao();
+atualizar();
+</script>
+
+</body>
+</html>

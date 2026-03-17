@@ -1,0 +1,1103 @@
+body{
+margin:0;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+overflow:auto;
+background:
+radial-gradient(circle at top, rgba(255,191,73,0.12), transparent 35%),
+#04070d;
+font-family:Arial, sans-serif;
+color:#ffffff;
+}
+
+#game-stage{
+position:fixed;
+top:0;
+left:0;
+width:100vw;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+background:#04070d;
+}
+
+/*#game-container{
+position:relative;
+width:1280px;
+height:720px;
+transform-origin:center center;
+}*/
+
+#game-container{
+position:absolute;
+width:1280px;
+height:720px;
+transform-origin:top left;
+}
+
+#game-background{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+user-select:none;
+pointer-events:none;
+}
+
+#game-ui{
+position:absolute;
+inset:0;
+}
+
+.templo-bg{
+position:absolute;
+inset:0;
+pointer-events:none;
+z-index:0;
+opacity:0;
+background:
+radial-gradient(circle at 50% 35%, rgba(255,220,120,0.28), rgba(255,200,80,0.08) 30%, rgba(0,0,0,0) 65%);
+}
+
+.container{
+position:absolute;
+inset:0;
+z-index:2;
+}
+
+.area-jogo{
+position:relative;
+width:100%;
+height:100%;
+}
+
+.painel{
+position:absolute;
+top:0%;
+left:50%;
+width:78%;
+padding:16.5% 1% 3%;
+display:flex;
+justify-content:center;
+align-items:flex-end;
+gap:3%;
+transform:translateX(-50%);
+box-sizing:border-box;
+perspective:900px;
+transform-style:preserve-3d;
+}
+
+.placas{
+position:absolute;
+top:25%;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+gap:4.5%;
+width:72%;
+justify-content:center;
+z-index:5;
+}
+
+.placa{
+position:relative;
+width:28%;
+max-width:180px;
+min-width:150px;
+border-radius:10px;
+box-shadow:
+inset 0 4px 8px rgba(0,0,0,0.8),
+inset 0 -3px 6px rgba(255,220,150,0.25),
+0 3px 8px rgba(0,0,0,0.8);
+background:radial-gradient(circle at 50% 30%, rgba(255,180,80,0.25), rgba(0,0,0,0.6));
+}
+
+.placa-aposta{
+width:180px;
+min-width:180px;
+max-width:180px;
+}
+
+.placa-aposta.bet-change{
+animation:betPlateFlash 200ms ease-out;
+}
+
+.placa::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:10px;
+z-index:1;
+background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55));
+pointer-events:none;
+}
+
+.placa img{
+position:relative;
+z-index:2;
+display:block;
+width:100%;
+filter:contrast(1.1) brightness(1.05);
+}
+
+.numero{
+position:absolute;
+top:55%;
+left:50%;
+transform:translate(-50%, -50%);
+z-index:3;
+font-size:30px;
+font-weight:bold;
+font-family:serif;
+color:#ffd66b;
+text-shadow:
+0 0 6px #000,
+0 0 12px #000,
+0 0 8px #ffcc66,
+0 0 18px #ffcc66;
+}
+
+.bet-control{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:12px;
+width:auto;
+}
+
+.bet-control .numero{
+font-size:24px;
+white-space:nowrap;
+}
+
+.bet-btn{
+display:flex;
+justify-content:center;
+align-items:center;
+width:60px;
+height:60px;
+padding:0;
+border:0;
+background:transparent;
+cursor:pointer;
+transition:transform .12s ease, opacity .2s ease, filter .2s ease;
+filter:drop-shadow(0 6px 12px rgba(0,0,0,0.45));
+}
+
+.bet-btn img{
+display:block;
+width:100%;
+height:100%;
+object-fit:contain;
+pointer-events:none;
+}
+
+.bet-btn:hover{
+transform:scale(1.05);
+}
+
+.bet-btn:active{
+transform:scale(0.9);
+}
+
+.bet-btn:disabled{
+opacity:.35;
+cursor:default;
+filter:grayscale(.2) drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+}
+
+.bet-btn:disabled:hover,
+.bet-btn:disabled:active{
+transform:none;
+}
+
+.bet-toast-wrapper{
+position:absolute;
+top:44%;
+left:50%;
+transform:translate(-50%, -50%);
+pointer-events:none;
+z-index:12;
+display:none;
+}
+
+.bet-toast{
+position:relative;
+transform:scale(0.82);
+min-width:240px;
+max-width:380px;
+padding:16px 28px;
+border:1px solid rgba(255,219,133,0.45);
+border-radius:14px;
+background:
+linear-gradient(180deg, rgba(83,52,18,0.88), rgba(39,23,6,0.9)),
+radial-gradient(circle at top, rgba(255,218,124,0.18), rgba(0,0,0,0) 60%);
+box-shadow:
+0 14px 28px rgba(0,0,0,0.35),
+inset 0 1px 0 rgba(255,233,174,0.2),
+0 0 18px rgba(255,196,72,0.16);
+font-family:serif;
+font-size:24px;
+font-weight:bold;
+letter-spacing:1px;
+text-align:center;
+color:#ffe19a;
+text-shadow:
+0 0 8px rgba(0,0,0,0.8),
+0 0 18px rgba(255,205,96,0.35);
+opacity:0;
+pointer-events:none;
+will-change:transform, opacity;
+display:flex;
+flex-direction:column;
+gap:6px;
+text-align:center;
+overflow:visible;
+}
+
+.bet-toast-label{
+display:block;
+white-space:nowrap;
+}
+
+.bet-toast-particles{
+position:absolute;
+inset:0;
+overflow:visible;
+pointer-events:none;
+z-index:-1;
+}
+
+.bet-toast-content{
+position:relative;
+z-index:1;
+display:flex;
+flex-direction:column;
+gap:6px;
+text-align:center;
+}
+
+.bet-toast-particle{
+position:absolute;
+left:50%;
+bottom:14px;
+width:8px;
+height:8px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(255,243,187,0.95) 0%, rgba(255,214,97,0.92) 45%, rgba(255,174,52,0) 76%);
+box-shadow:0 0 10px rgba(255,211,101,0.35);
+opacity:0;
+pointer-events:none;
+z-index:11;
+animation:betToastParticleRise 1.35s ease-out forwards;
+will-change:transform, opacity;
+}
+
+.bet-toast.ativo{
+animation:betToastInOut var(--bet-toast-duration, 3000ms) ease forwards;
+}
+
+#aposta.bet-change{
+animation:betValuePulse 200ms ease-out;
+}
+
+.carta{
+position:relative;
+z-index:3;
+width:180px;
+height:250px;
+perspective:900px;
+flex-shrink:0;
+overflow:hidden;
+filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45));
+transform-style:preserve-3d;
+transition:transform 0.25s ease-out;
+will-change:transform;
+}
+
+.carta-inner{
+position:relative;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:12px;
+background:linear-gradient(145deg, rgba(255,220,150,0.12), rgba(0,0,0,0.55));
+
+box-shadow:
+0 10px 18px rgba(0,0,0,0.65);
+
+transform-origin:center;
+transform-style:preserve-3d;
+transition:transform 0.6s ease-out;
+
+overflow:hidden;
+box-sizing:border-box;
+}
+
+.carta.girando .carta-inner{
+animation:girarCarta 0.25s linear infinite;
+}
+
+.carta.spin3d{
+transform:rotateY(40deg) scale(0.96);
+}
+
+.carta.stop3d{
+transform:rotateY(0deg) scale(1);
+}
+
+.carta img{
+width:100%;
+height:100%;
+display:block;
+object-fit:contain;
+border-radius:12px;
+filter:contrast(1.05) brightness(.95);
+}
+
+.controles{
+position:absolute;
+left:50%;
+top:68%;
+transform:translateX(-50%);
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+width:42%;
+z-index:5;
+}
+
+.botoes{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:20px;
+width:100%;
+}
+
+.btn-girar,
+.btn-auto{
+cursor:pointer;
+transition:transform .1s ease, opacity .2s ease, filter .2s ease;
+}
+
+.btn-girar{
+display:block;
+width:220px;
+}
+
+.btn-auto{
+width:120px;
+}
+
+.btn-girar:hover,
+.btn-auto:hover{
+transform:scale(1.05);
+}
+
+.btn-girar:active,
+.btn-auto:active{
+transform:scale(.95);
+}
+
+.btn-girar.pressionado{
+transform:scale(.92);
+}
+
+.msg-creditos{
+margin-top:10px;
+font-size:18px;
+letter-spacing:2px;
+color:#ffd66b;
+opacity:0;
+pointer-events:none;
+transition:opacity .3s ease;
+text-align:center;
+}
+
+.msg-creditos.ativo{
+opacity:1;
+animation:pulsarAviso 1.2s ease-in-out infinite;
+}
+
+.btn-girar.erro{
+animation:tremer .3s;
+}
+
+.torch{
+position:absolute;
+top:6%;
+width:9.4%;
+max-width:120px;
+pointer-events:none;
+z-index:1;
+}
+
+.torch-left{
+left:13%;
+}
+
+.torch-right{
+right:13%;
+}
+
+.fogo{
+position:absolute;
+width:100px;
+height:200px;
+left:50%;
+top:-25px;
+transform:translateX(-50%);
+background:radial-gradient(circle, #ffd27a 0%, #ff8a00 40%, rgba(0,0,0,0) 70%);
+border-radius:50%;
+filter:blur(2px);
+animation:chama 0.35s infinite alternate ease-in-out;
+}
+
+.painel.jackpot{
+animation:vibrarPainel 0.15s infinite;
+}
+
+.carta.jackpot{
+animation:pulsarCarta 0.7s ease-in-out infinite;
+}
+
+.carta.win{
+animation:cartaVencedora 0.8s ease-in-out 3;
+}
+
+.carta.temple-eye{
+filter:
+drop-shadow(0 0 10px rgba(101, 214, 255, 0.35))
+drop-shadow(0 0 18px rgba(101, 214, 255, 0.2));
+}
+
+.templo-jackpot{
+animation:temploIluminado 1.2s ease-out;
+opacity:1;
+}
+
+.torch.jackpot .fogo{
+animation:chamaJackpot 0.25s infinite alternate;
+filter:
+brightness(1.6)
+drop-shadow(0 0 12px #ffcc66)
+drop-shadow(0 0 20px #ff9900);
+}
+
+.btn-auto.ativo{
+filter:brightness(1.4);
+animation:autoAtivo 1s infinite;
+}
+
+.btn-girar.spin-ready{
+animation:spinReady 1.9s ease-in-out infinite;
+filter:drop-shadow(0 0 10px rgba(255,214,107,0.35));
+}
+
+.particula{
+position:absolute;
+z-index:10;
+width:5px;
+height:5px;
+background:radial-gradient(circle, #ffd66b 0%, #ffb347 40%, rgba(255,180,70,0) 70%);
+border-radius:50%;
+opacity:.8;
+pointer-events:none;
+animation:poeiraMagica 3.5s linear forwards;
+}
+
+.fumaca{
+position:absolute;
+z-index:9;
+bottom:0;
+left:0;
+width:120px;
+height:120px;
+background:radial-gradient(circle, rgba(255,220,160,.35) 0%, rgba(200,180,120,.2) 40%, rgba(0,0,0,0) 70%);
+border-radius:50%;
+filter:blur(6px);
+pointer-events:none;
+animation:subirFumaca 6s linear forwards;
+}
+
+.faisca{
+position:absolute;
+width:6px;
+height:6px;
+background:radial-gradient(circle, #ffd66b 0%, #ffb347 50%, rgba(0,0,0,0) 80%);
+border-radius:50%;
+pointer-events:none;
+animation:faisca 600ms ease-out forwards;
+}
+
+.moeda-transfer{
+position:fixed;
+width:30px;
+height:30px;
+background-image:url("assets/efeitos/coin.png");
+background-size:contain;
+background-repeat:no-repeat;
+pointer-events:none;
+z-index:20;
+animation:voarMoeda 1.6s cubic-bezier(.2,.7,.3,1) forwards;
+}
+
+.moeda-chuva{
+position:fixed;
+top:-40px;
+width:22px;
+height:22px;
+background-image:url("assets/efeitos/coin.png");
+background-size:contain;
+background-repeat:no-repeat;
+pointer-events:none;
+z-index:30;
+filter:
+brightness(1.4)
+contrast(1.2)
+drop-shadow(0 0 6px #ffd66b);
+animation:quedaMoeda 2.5s linear forwards;
+}
+
+.flash-jackpot{
+position:fixed;
+inset:0;
+background:radial-gradient(circle, rgba(255,220,120,0.95) 0%, rgba(255,200,80,0.7) 35%, rgba(255,180,40,0.35) 60%, rgba(0,0,0,0) 80%);
+pointer-events:none;
+z-index:50;
+animation:flashJackpot 0.6s ease-out forwards;
+}
+
+.torch::after{
+content:"";
+position:absolute;
+left:50%;
+top:8px;
+width:84px;
+height:84px;
+transform:translateX(-50%);
+border-radius:50%;
+background:radial-gradient(circle, rgba(255,210,110,0.34) 0%, rgba(255,164,44,0.18) 38%, rgba(0,0,0,0) 72%);
+filter:blur(6px);
+opacity:0.7;
+animation:torchGlow 2.6s ease-in-out infinite;
+}
+
+.torch-spark{
+position:absolute;
+bottom:72%;
+width:7px;
+height:7px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(255,240,180,0.95) 0%, rgba(255,177,73,0.82) 45%, rgba(255,120,0,0) 80%);
+pointer-events:none;
+opacity:0;
+animation:torchSparkRise 2.8s linear infinite;
+z-index:2;
+}
+
+@keyframes girarCarta{
+0%{transform:rotateY(0deg);}
+100%{transform:rotateY(360deg);}
+}
+
+@keyframes vibrarPainel{
+0%{transform:translate(-50%, 0);}
+20%{transform:translate(calc(-50% - 3px), 2px);}
+40%{transform:translate(calc(-50% + 3px), -2px);}
+60%{transform:translate(calc(-50% - 2px), 3px);}
+80%{transform:translate(calc(-50% + 2px), -3px);}
+100%{transform:translate(-50%, 0);}
+}
+
+@keyframes poeiraMagica{
+0%{
+transform:translateY(0) scale(.6);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateY(-140px) scale(1.2);
+opacity:0;
+}
+}
+
+@keyframes subirFumaca{
+0%{
+transform:translateY(0) scale(.75);
+opacity:0;
+}
+20%{
+opacity:.6;
+}
+100%{
+transform:translateY(-120px) scale(1.35);
+opacity:0;
+}
+}
+
+@keyframes faisca{
+0%{
+transform:scale(.5);
+opacity:1;
+}
+100%{
+transform:scale(3);
+opacity:0;
+}
+}
+
+@keyframes chama{
+0%{
+transform:translateX(-50%) scale(1) rotate(-2deg);
+opacity:0.9;
+}
+100%{
+transform:translateX(-50%) scale(1.25) rotate(2deg);
+opacity:0.7;
+}
+}
+
+@keyframes voarMoeda{
+0%{
+transform:scale(.4) rotate(0deg);
+opacity:1;
+}
+20%{
+transform:translate(0px,-40px) rotate(180deg);
+}
+40%{
+transform:translate(30px,-20px) rotate(360deg);
+}
+60%{
+transform:translate(-20px,-10px) rotate(540deg);
+}
+80%{
+transform:translate(calc(var(--dx) * 0.5),calc(var(--dy) * 0.5)) rotate(720deg);
+}
+100%{
+transform:translate(var(--dx),var(--dy)) rotate(900deg) scale(.8);
+opacity:1;
+}
+}
+
+@keyframes pulsarAviso{
+0%{transform:scale(1);}
+50%{transform:scale(1.08);}
+100%{transform:scale(1);}
+}
+
+@keyframes tremer{
+0%{transform:translateX(0);}
+25%{transform:translateX(-4px);}
+50%{transform:translateX(4px);}
+75%{transform:translateX(-4px);}
+100%{transform:translateX(0);}
+}
+
+@keyframes autoAtivo{
+0%{transform:scale(1);}
+50%{transform:scale(1.08);}
+100%{transform:scale(1);}
+}
+
+@keyframes pulsarCarta{
+0%{
+transform:scale(1);
+filter:brightness(1);
+}
+50%{
+transform:scale(1.1);
+filter:brightness(1.6);
+}
+100%{
+transform:scale(1);
+filter:brightness(1);
+}
+}
+
+@keyframes torchGlow{
+0%{
+transform:translateX(-50%) scale(0.92);
+opacity:0.5;
+}
+50%{
+transform:translateX(-50%) scale(1.08);
+opacity:0.95;
+}
+100%{
+transform:translateX(-50%) scale(0.94);
+opacity:0.55;
+}
+}
+
+@keyframes torchSparkRise{
+0%{
+transform:translate(0,0) scale(0.5);
+opacity:0;
+}
+18%{
+opacity:0.95;
+}
+100%{
+transform:translate(var(--spark-dx),-70px) scale(var(--spark-scale));
+opacity:0;
+}
+}
+
+@keyframes cartaVencedora{
+0%{
+transform:translateY(0) scale(1);
+filter:brightness(1);
+}
+50%{
+transform:translateY(-10px) scale(1.06);
+filter:brightness(1.25);
+}
+100%{
+transform:translateY(0) scale(1);
+filter:brightness(1);
+}
+}
+
+@keyframes spinReady{
+0%{
+transform:scale(1);
+}
+50%{
+transform:scale(1.06);
+}
+100%{
+transform:scale(1);
+}
+}
+
+@keyframes betValuePulse{
+0%{
+transform:translate(-50%, -50%) scale(1);
+}
+50%{
+transform:translate(-50%, -50%) scale(1.08);
+}
+100%{
+transform:translate(-50%, -50%) scale(1);
+}
+}
+
+@keyframes betPlateFlash{
+0%{
+filter:brightness(1);
+}
+50%{
+filter:brightness(1.18) drop-shadow(0 0 12px rgba(255,214,107,0.4));
+}
+100%{
+filter:brightness(1);
+}
+}
+
+@keyframes betToastInOut{
+0%{
+opacity:0;
+transform:scale(0.82);
+}
+10%{
+opacity:1;
+transform:scale(1.06);
+}
+15%{
+transform:scale(0.98);
+}
+22%{
+opacity:1;
+transform:scale(1);
+}
+91%{
+opacity:1;
+transform:scale(1);
+}
+100%{
+opacity:0;
+transform:scale(0.94);
+}
+}
+
+@keyframes betToastParticleRise{
+0%{
+transform:translate3d(0, 0, 0) scale(0.35);
+opacity:0;
+}
+20%{
+opacity:0.95;
+}
+100%{
+transform:translate3d(var(--toast-particle-x), -42px, 0) scale(var(--toast-particle-scale));
+opacity:0;
+}
+}
+
+@keyframes quedaMoeda{
+0%{
+transform:translateY(-50px) rotate(0deg);
+opacity:1;
+}
+100%{
+transform:translateY(110vh) rotate(720deg);
+opacity:1;
+}
+}
+
+@keyframes flashJackpot{
+0%{opacity:0;}
+20%{opacity:1;}
+100%{opacity:0;}
+}
+
+@keyframes temploIluminado{
+0%{filter:brightness(1);}
+30%{filter:brightness(1.6) saturate(1.2);}
+100%{filter:brightness(1);}
+}
+
+@keyframes chamaJackpot{
+0%{
+transform:translateX(-50%) scale(1.1);
+}
+100%{
+transform:translateX(-50%) scale(1.4);
+}
+}
+
+@media (max-width: 1280px){
+body{
+align-items:flex-start;
+}
+}
+
+@media (max-width: 768px){
+.msg-creditos{
+font-size:16px;
+letter-spacing:1px;
+}
+
+.bet-control{
+gap:8px;
+}
+
+.bet-btn{
+width:48px;
+height:48px;
+}
+
+.bet-toast{
+min-width:180px;
+max-width:280px;
+padding:12px 18px;
+font-size:19px;
+}
+
+.bet-control .numero{
+font-size:20px;
+}
+}
+
+#jackpot-container{
+position:absolute;
+top:-1%;
+left:50%;
+transform:translateX(-50%);
+pointer-events:none;
+z-index:6;
+overflow:visible;
+}
+
+#jackpot-placa{
+display:block;
+width:250px;
+max-width:100%;
+}
+
+#jackpot-valor{
+position:absolute;
+top:52%;
+left:50%;
+transform:translate(-50%, -50%);
+transform-origin:center;
+font-family:serif;
+font-weight:bold;
+font-size:42px;
+color:#ffd700;
+text-shadow:
+0 0 5px #c9a200,
+0 0 10px #ffcc00,
+0 0 20px #ffcc00;
+animation:jackpotPulse 2.2s ease-in-out infinite, jackpotGlow 2.8s ease-in-out infinite;
+will-change:transform, text-shadow;
+}
+
+.jackpot-particula{
+position:absolute;
+width:8px;
+height:8px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(255,244,186,0.95) 0%, rgba(255,210,80,0.9) 35%, rgba(255,173,36,0.55) 60%, rgba(255,173,36,0) 75%);
+box-shadow:0 0 8px rgba(255,210,80,0.45);
+opacity:0;
+pointer-events:none;
+z-index:7;
+animation:jackpotParticleRise 3s ease-out forwards;
+will-change:transform, opacity;
+}
+
+.jackpot-message{
+position:absolute;
+top:47%;
+left:50%;
+transform:translate(-50%, -50%) scale(0.86);
+padding:18px 34px;
+border:1px solid rgba(255, 225, 135, 0.35);
+border-radius:16px;
+background:linear-gradient(180deg, rgba(63, 36, 8, 0.88), rgba(24, 12, 2, 0.88));
+box-shadow:
+0 18px 36px rgba(0,0,0,0.42),
+0 0 26px rgba(255, 213, 101, 0.2),
+inset 0 1px 0 rgba(255,255,255,0.12);
+font-family:serif;
+font-size:48px;
+font-weight:bold;
+letter-spacing:3px;
+color:#ffd76e;
+text-shadow:
+0 0 10px rgba(0,0,0,0.92),
+0 0 26px rgba(255, 202, 79, 0.55);
+white-space:nowrap;
+opacity:0;
+pointer-events:none;
+z-index:25;
+}
+
+.jackpot-message.ativo{
+animation:jackpotMessageIn 1s ease-out forwards;
+}
+
+.temple-dust{
+position:fixed;
+top:-18px;
+width:7px;
+height:7px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(255, 232, 179, 0.95) 0%, rgba(199, 174, 121, 0.6) 55%, rgba(199, 174, 121, 0) 80%);
+filter:blur(0.6px);
+pointer-events:none;
+z-index:24;
+opacity:0;
+animation:templeDustFall var(--dust-duration, 4.6s) linear forwards;
+}
+
+.moeda-chuva.jackpot-long{
+animation-name:quedaMoedaJackpot;
+animation-timing-function:linear;
+animation-fill-mode:forwards;
+}
+
+@keyframes jackpotPulse{
+0%{
+transform:translate(-50%, -50%) scale(1);
+}
+50%{
+transform:translate(-50%, -50%) scale(1.06);
+}
+100%{
+transform:translate(-50%, -50%) scale(1);
+}
+}
+
+@keyframes jackpotGlow{
+0%{
+text-shadow:
+0 0 5px #8b6400,
+0 0 12px rgba(255,196,0,0.75),
+0 0 24px rgba(255,214,83,0.55);
+}
+50%{
+text-shadow:
+0 0 6px #c9a200,
+0 0 16px rgba(255,220,110,1),
+0 0 30px rgba(255,211,77,0.95),
+0 0 44px rgba(255,185,59,0.55);
+}
+100%{
+text-shadow:
+0 0 5px #8b6400,
+0 0 12px rgba(255,196,0,0.75),
+0 0 24px rgba(255,214,83,0.55);
+}
+}
+
+@keyframes jackpotParticleRise{
+0%{
+transform:translate3d(0, 0, 0) scale(0.45);
+opacity:0;
+}
+18%{
+opacity:0.95;
+}
+100%{
+transform:translate3d(var(--jackpot-dx), -54px, 0) scale(var(--jackpot-scale));
+opacity:0;
+}
+}
+
+@keyframes jackpotMessageIn{
+0%{
+opacity:0;
+transform:translate(-50%, -50%) scale(0.7);
+}
+18%{
+opacity:1;
+transform:translate(-50%, -50%) scale(1.08);
+}
+30%{
+transform:translate(-50%, -50%) scale(1);
+}
+100%{
+opacity:1;
+transform:translate(-50%, -50%) scale(1);
+}
+}
+
+@keyframes templeDustFall{
+0%{
+transform:translate3d(0, 0, 0) scale(0.4);
+opacity:0;
+}
+10%{
+opacity:0.82;
+}
+100%{
+transform:translate3d(var(--dust-drift), 96vh, 0) scale(var(--dust-scale));
+opacity:0;
+}
+}
+
+@keyframes quedaMoedaJackpot{
+0%{
+transform:translateY(-60px) rotate(0deg) scale(var(--coin-scale, 1));
+opacity:1;
+}
+100%{
+transform:translateY(118vh) rotate(var(--coin-rotation, 720deg)) scale(var(--coin-scale, 1));
+opacity:1;
+}
+}
