@@ -156,13 +156,20 @@ function ajustarEscalaJogo(){
         escala = Math.min(escalaX, escalaY);
     }
 
-    container.style.transform = `scale(${escala})`;
+    container.style.transformOrigin = "top center";
+	container.style.transform = `scale(${escala})`;
 
     const larguraFinal = BASE_WIDTH * escala;
     const alturaFinal = BASE_HEIGHT * escala;
 
     container.style.left = ((larguraTela - larguraFinal) / 2) + "px";
-    container.style.top = ((alturaTela - alturaFinal) / 2) + "px";
+   if(larguraTela < 900){
+		// MOBILE → trava no topo
+		container.style.top = "0px";
+	} else {
+		// DESKTOP → mantém centralizado
+		container.style.top = ((alturaTela - alturaFinal) / 2) + "px";
+}
 }
 
 window.addEventListener("resize", ajustarEscalaJogo);
