@@ -142,15 +142,24 @@ function ajustarEscalaJogo(){
     const larguraTela = window.innerWidth;
     const alturaTela = window.innerHeight;
 
-    const escalaX = larguraTela / BASE_WIDTH;
-    const escalaY = alturaTela / BASE_HEIGHT;
+    const isMobile = larguraTela < 900;
 
-    const escala = Math.min(escalaX, escalaY);
+    let escala;
+
+    if(isMobile){
+        // MOBILE → usa largura + boost
+        escala = (larguraTela / BASE_WIDTH) * 1.2;
+    } else {
+        // DESKTOP → fit normal
+        const escalaX = larguraTela / BASE_WIDTH;
+        const escalaY = alturaTela / BASE_HEIGHT;
+        escala = Math.min(escalaX, escalaY);
+    }
+
+    container.style.transform = `scale(${escala})`;
 
     const larguraFinal = BASE_WIDTH * escala;
     const alturaFinal = BASE_HEIGHT * escala;
-
-    container.style.transform = `scale(${escala})`;
 
     container.style.left = ((larguraTela - larguraFinal) / 2) + "px";
     container.style.top = ((alturaTela - alturaFinal) / 2) + "px";
@@ -159,7 +168,6 @@ function ajustarEscalaJogo(){
 window.addEventListener("resize", ajustarEscalaJogo);
 window.addEventListener("load", ajustarEscalaJogo);
 </script>
-<script>
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
     .then(() => console.log('Service Worker registrado'))
