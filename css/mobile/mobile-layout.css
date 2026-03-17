@@ -1,0 +1,16 @@
+@media (max-width: 900px){
+
+    .controles{
+        top: 58%; /* sobe os botões */
+        width: 70%; /* aumenta área */
+    }
+
+    .btn-girar{
+        width: 260px; /* maior no mobile */
+    }
+
+    .btn-auto{
+        width: 140px;
+    }
+
+}
