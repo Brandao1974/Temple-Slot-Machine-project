@@ -920,6 +920,26 @@ window.onload = function(){
     reconciliarEstadoExterno();
 };
 
+/* ===== LOADER TRANSITION ===== */
+
+window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    const game = document.getElementById("game-container");
+
+    setTimeout(() => {
+
+        loader.style.opacity = "0";
+
+        game.style.opacity = "1";
+        game.style.transform = "scale(1)";
+
+        setTimeout(() => {
+            loader.style.display = "none";
+        }, 800);
+
+    }, 500);
+});
+
 function ajustarEscala(){
 
 const stage = document.getElementById("game-container");
