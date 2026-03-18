@@ -1,8 +1,58 @@
 @media (max-width: 900px){
 	
+	body{
+		padding-top: env(safe-area-inset-top);
+		padding-bottom: env(safe-area-inset-bottom);
+		}
+	
 	html, body{
 		touch-action: manipulation;
 		}
+		
+		#loader{
+position:fixed;
+inset:0;
+background:#04070d;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+transition:opacity 0.5s ease;
+}
+
+.loader-icon{
+width:120px;
+animation:pulsarLoader 1.5s ease-in-out infinite;
+filter:drop-shadow(0 0 20px rgba(255,200,80,0.6));
+}
+
+@keyframes pulsarLoader{
+0%{
+transform:scale(1);
+opacity:0.8;
+}
+50%{
+transform:scale(1.15);
+opacity:1;
+}
+100%{
+transform:scale(1);
+opacity:0.8;
+}
+}
+		
+.loader-icon{
+animation:
+pulsarLoader 1.5s ease-in-out infinite,
+girar 6s linear infinite;
+}
+
+@keyframes girar{
+from{ transform:rotate(0deg); }
+to{ transform:rotate(360deg); }
+}		
+		
+		
 
     .controles{
         top: 58%; /* sobe os botões */

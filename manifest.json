@@ -6,6 +6,7 @@
   "display_override": ["fullscreen", "standalone"],
   "background_color": "#04070d",
   "theme_color": "#04070d",
+  "purpose": "any maskable"
   "orientation": "landscape",
   "icons": [
     {
