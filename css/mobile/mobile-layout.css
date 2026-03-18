@@ -1,4 +1,8 @@
 @media (max-width: 900px){
+	
+	html, body{
+		touch-action: manipulation;
+		}
 
     .controles{
         top: 58%; /* sobe os botões */

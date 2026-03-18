@@ -363,6 +363,19 @@ function inicializarTochasVivas(){
     });
 }
 
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
+
 function criarParticulaJackpot(){
     if(!jackpotEl || !jackpotEl.parentElement){
         return;
@@ -880,6 +893,12 @@ if(betToastEl && !betToastAnimationEndHandlerAttached){
     });
     betToastAnimationEndHandlerAttached = true;
 }
+
+document.addEventListener('touchmove', function (event) {
+    if (event.scale !== 1) {
+        event.preventDefault();
+    }
+}, { passive: false });
 
 window.onload = function(){
     saldo = lerSaldoSalvo();
