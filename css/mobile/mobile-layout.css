@@ -90,7 +90,7 @@ pointer-events:none;
 	width:16%;
 	height:auto;
 	aspect-ratio:180/250;
-	transform:translateY(-10%);
+	transform:translateY(0); /* base fixa */
 
 		}
 		
