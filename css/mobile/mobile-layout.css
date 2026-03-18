@@ -6,19 +6,92 @@
     }
 
     .btn-girar{
-        width: 260px; /* maior no mobile */
+        width: 200px; /* maior no mobile */
     }
 
     .btn-auto{
         width: 140px;
     }
 
-}
-
-@media (max-width: 900px){
-
     .painel{
-        padding: 18% 1% 8%;
+        padding: 15% 1% 8%;
     }
 
+    .controles{
+        top: 55%;
+    }
+
+
+		 .placas{
+		position:absolute;
+		left:50%;
+		top:-35%; /* relativo à tela */
+		transform:translateX(-50%);
+		width:75%;
+		display:flex;
+		justify-content:center;
+		gap:3%;
+		z-index:5;
+
+		}
+
+    .placa{
+        min-width: 120px;
+        max-width: 140px;
+    }
+
+    .placa-aposta{
+        width: 160px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+
+    .numero{
+        font-size: 25px; /* aumenta leitura */
+		top:35px;	
+    }
+
+    .bet-control .numero{
+        font-size: 25px;
+    }
+
+ #game-background{
+height:75%;
+transform:translateY(-10%);
+}
+
+#game-frame{
+position:absolute;
+left:50%;
+height:60%;
+top:40%;
+transform:translate(-50%, -50%);
+width:60%;
+z-index:1;
+pointer-events:none;
+   -webkit-mask-image: radial-gradient(circle at center, black 92%, transparent 100%);
+    mask-image: radial-gradient(circle at center, black 92%, transparent 100%);
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+	
+}
+
+	.painel{
+	position:absolute;
+	left:50%;
+	top:36%; /* MESMO TOP DA MOLDURA */
+	transform:translate(-50%, -40%);
+	width:70%;
+	padding:0;
+	gap:4%;
+}
+
+
+	.carta{
+	width:16%;
+	height:auto;
+	aspect-ratio:180/250;
+	transform:translateY(-10%);
+
+		}
+		
 }
