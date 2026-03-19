@@ -67,9 +67,9 @@ const tochas = Array.from(document.querySelectorAll(".torch"));
 const gameStageEl = document.getElementById("game-stage");
 const gameContainerEl = document.getElementById("game-container");
 
-function ajustarEscala(){
-    if(!gameStageEl || !gameContainerEl){
-        return;
+/*function ajustarEscala(){
+  //  if(!gameStageEl || !gameContainerEl){
+       return;
     }
 
     const scaleWidth = window.innerWidth / BASE_GAME_WIDTH;
@@ -79,7 +79,7 @@ function ajustarEscala(){
     gameContainerEl.style.transform = `scale(${scale})`;
     gameStageEl.style.width = `${BASE_GAME_WIDTH * scale}px`;
     gameStageEl.style.height = `${BASE_GAME_HEIGHT * scale}px`;
-}
+}*/
 
 function salvarSaldo(){
     window.localStorage.setItem("saldo", String(saldo));
@@ -960,7 +960,7 @@ stage.style.transform = "scale(" + escala + ")";
 window.addEventListener("resize", ajustarEscala);
 window.addEventListener("load", ajustarEscala);
 
-function ajustarEscalaGame(){
+/*function ajustarEscalaGame(){
 
 const game = document.getElementById("game-container");
 if(!game) return;
@@ -977,7 +977,7 @@ game.style.transform = `scale(${escala})`;
 }
 
 window.addEventListener("resize", ajustarEscalaGame);
-window.addEventListener("load", ajustarEscalaGame);
+window.addEventListener("load", ajustarEscalaGame);*/
 
 function verificarOrientacao(){
 
@@ -1006,3 +1006,64 @@ padding:40px;
 
 window.addEventListener("load", verificarOrientacao);
 window.addEventListener("resize", verificarOrientacao);
+
+
+// atualização do sw
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          
+          mostrarAvisoAtualizacao(newWorker);
+
+        }
+      });
+    });
+
+  });
+}
+
+function mostrarAvisoAtualizacao(worker) {
+  const aviso = document.createElement('div');
+  
+  aviso.innerHTML = `
+    <div style="
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#111;
+      color:#fff;
+      padding:15px 20px;
+      border-radius:10px;
+      z-index:9999;
+      box-shadow:0 0 10px rgba(0,0,0,0.5);
+    ">
+      Nova versão disponível 🎮
+      <button id="btn-update" style="
+        margin-left:10px;
+        padding:5px 10px;
+        background:#ffd66b;
+        border:none;
+        border-radius:5px;
+        cursor:pointer;
+      ">
+        Atualizar
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(aviso);
+
+  document.getElementById('btn-update').onclick = () => {
+    worker.postMessage('SKIP_WAITING');
+  };
+}
+
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  window.location.reload();
+});

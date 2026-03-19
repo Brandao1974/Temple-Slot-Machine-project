@@ -1,45 +1,43 @@
-@media (max-width: 900px){
+@media (max-width: 900px)
+{
 	
-	body{
-		padding-top: env(safe-area-inset-top);
-		padding-bottom: env(safe-area-inset-bottom);
-		}
-	
-	html, body{
-		touch-action: manipulation;
-		}
+		html, body{
+					padding-top: env(safe-area-inset-top);
+					padding-bottom: env(safe-area-inset-bottom);
+					touch-action: manipulation;
+				}
 		
 		#loader{
-position:fixed;
-inset:0;
-background:#04070d;
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:9999;
-transition:opacity 0.5s ease;
-}
+					position:fixed;
+					inset:0;
+					background:#04070d;
+					display:flex;
+					justify-content:center;
+					align-items:center;
+					z-index:9999;
+					transition:opacity 0.5s ease;
+				}
 
-.loader-icon{
-width:120px;
-animation:pulsarLoader 1.5s ease-in-out infinite;
-filter:drop-shadow(0 0 20px rgba(255,200,80,0.6));
-}
+		.loader-icon{
+					width:120px;
+					animation:pulsarLoader 1.5s ease-in-out infinite;
+					filter:drop-shadow(0 0 20px rgba(255,200,80,0.6));
+				}
 
-@keyframes pulsarLoader{
-0%{
-transform:scale(1);
-opacity:0.8;
-}
-50%{
-transform:scale(1.15);
-opacity:1;
-}
-100%{
-transform:scale(1);
-opacity:0.8;
-}
-}
+				@keyframes pulsarLoader{
+				0%{
+				transform:scale(1);
+				opacity:0.8;
+				}
+				50%{
+				transform:scale(1.15);
+				opacity:1;
+				}
+				100%{
+				transform:scale(1);
+				opacity:0.8;
+				}
+				}
 		
 .loader-icon{
 animation:
@@ -55,36 +53,40 @@ to{ transform:rotate(360deg); }
 		
 
     .controles{
-        top: 58%; /* sobe os botões */
+        top: 19%; /* sobe os botões */
         width: 70%; /* aumenta área */
+		left:21px;
+		transform: translate(-50%, -50%);
+			
     }
+	
+	.botoes{
+gap:20px;
+}
+	
+	
 
     .btn-girar{
-        width: 200px; /* maior no mobile */
+        width: 150px; /* maior no mobile */
     }
 
     .btn-auto{
-        width: 140px;
+        width: 120px;
     }
 
     .painel{
         padding: 15% 1% 8%;
     }
 
-    .controles{
-        top: 55%;
-    }
-
-
 		 .placas{
 		position:absolute;
 		left:50%;
-		top:-35%; /* relativo à tela */
-		transform:translateX(-50%);
+		top:-43%; /* relativo à tela */
+		transform:translateX(-81%);
 		width:75%;
 		display:flex;
 		justify-content:center;
-		gap:3%;
+		gap:0%;
 		z-index:5;
 
 		}
@@ -108,19 +110,47 @@ to{ transform:rotate(360deg); }
     .bet-control .numero{
         font-size: 25px;
     }
+	
+	.torch{
+position:absolute;
+top:-24%;
+width:9.4%;
+max-width:120px;
+pointer-events:none;
+z-index:3;
+}
+
+.torch-left{
+left:-28%;
+}
+
+.torch-right{
+right:70%;
+}
+	
+.msg-creditos{
+position:absolute;
+left:33%;
+top:-200%;
+transform:translate(-50%, -50%);
+margin:0;
+z-index:20;
+}
+	
+	
+	
 
  #game-background{
-height:75%;
-transform:translateY(-10%);
+height:68%;
+transform:translate(-50%, -50%);
 }
 
 #game-frame{
 position:absolute;
-left:50%;
-height:60%;
-top:40%;
-transform:translate(-50%, -50%);
-width:60%;
+height:47%;
+top:44%;
+transform:translate(-154%, -136%);
+width:48%;
 z-index:1;
 pointer-events:none;
    -webkit-mask-image: radial-gradient(circle at center, black 92%, transparent 100%);
@@ -131,12 +161,13 @@ pointer-events:none;
 
 	.painel{
 	position:absolute;
-	left:50%;
-	top:36%; /* MESMO TOP DA MOLDURA */
-	transform:translate(-50%, -40%);
-	width:70%;
+	display:flex;
+	left:177px;
+	top:0%; /* MESMO TOP DA MOLDURA */
+	transform:translate(-51%, -39%);
+	width:58%;
 	padding:0;
-	gap:4%;
+	gap:3%;
 }
 
 

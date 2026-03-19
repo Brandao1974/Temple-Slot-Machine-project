@@ -1,3 +1,0 @@
-git add .
-git commit -m "Adjust mobile scaling to improve UX"
-git push
