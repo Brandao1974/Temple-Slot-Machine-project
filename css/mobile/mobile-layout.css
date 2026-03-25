@@ -52,13 +52,12 @@ to{ transform:rotate(360deg); }
 		
 		
 
-    .controles{
-        top: 19%; /* sobe os botões */
-        width: 70%; /* aumenta área */
-		left:21px;
-		transform: translate(-50%, -50%);
-			
-    }
+.controles{
+top:19%;
+left:50%;
+transform: translate(-50%, -50%);
+width:70%;
+}
 	
 	.botoes{
 gap:20px;
