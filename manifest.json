@@ -1,8 +1,8 @@
 {
   "name": "Tesouro do Templo",
   "short_name": "Tesouro",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/Temple-Slot-Machine-project/",
+  "scope": "/Temple-Slot-Machine-project/",
   "display": "standalone",
 
   "background_color": "#04070d",
