@@ -140,8 +140,9 @@ z-index:20;
 	
 
  #game-background{
-height:68%;
-transform:translate(-50%, -50%);
+height: 121%;
+width: 114vw;
+transform: translate(-50%, -7%);
 }
 
 #game-frame{
@@ -159,14 +160,14 @@ pointer-events:none;
 }
 
 	.painel{
-	position:absolute;
-	display:flex;
-	left:177px;
-	top:0%; /* MESMO TOP DA MOLDURA */
-	transform:translate(-51%, -39%);
-	width:58%;
-	padding:0;
-	gap:3%;
+		position: absolute;
+        display: flex;
+        left: 177px;
+        top: 50%;
+        transform: translate(-53%, -39%);
+        width: 85%;
+        padding: 0;
+        gap: 3%;
 }
 
 
