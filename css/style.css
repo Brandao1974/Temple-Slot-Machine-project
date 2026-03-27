@@ -425,36 +425,6 @@ animation:pulsarAviso 1.2s ease-in-out infinite;
 animation:tremer .3s;
 }
 
-.torch{
-position:absolute;
-top:6%;
-width:9.4%;
-max-width:120px;
-pointer-events:none;
-z-index:1;
-}
-
-.torch-left{
-left:13%;
-}
-
-.torch-right{
-right:13%;
-}
-
-.fogo{
-position:absolute;
-width:100px;
-height:200px;
-left:50%;
-top:-25px;
-transform:translateX(-50%);
-background:radial-gradient(circle, #ffd27a 0%, #ff8a00 40%, rgba(0,0,0,0) 70%);
-border-radius:50%;
-filter:blur(2px);
-animation:chama 0.35s infinite alternate ease-in-out;
-}
-
 .painel.jackpot{
 animation:vibrarPainel 0.15s infinite;
 }
@@ -476,14 +446,6 @@ drop-shadow(0 0 18px rgba(101, 214, 255, 0.2));
 .templo-jackpot{
 animation:temploIluminado 1.2s ease-out;
 opacity:1;
-}
-
-.torch.jackpot .fogo{
-animation:chamaJackpot 0.25s infinite alternate;
-filter:
-brightness(1.6)
-drop-shadow(0 0 12px #ffcc66)
-drop-shadow(0 0 20px #ff9900);
 }
 
 .btn-auto.ativo{
@@ -568,34 +530,6 @@ background:radial-gradient(circle, rgba(255,220,120,0.95) 0%, rgba(255,200,80,0.
 pointer-events:none;
 z-index:50;
 animation:flashJackpot 0.6s ease-out forwards;
-}
-
-.torch::after{
-content:"";
-position:absolute;
-left:50%;
-top:8px;
-width:84px;
-height:84px;
-transform:translateX(-50%);
-border-radius:50%;
-background:radial-gradient(circle, rgba(255,210,110,0.34) 0%, rgba(255,164,44,0.18) 38%, rgba(0,0,0,0) 72%);
-filter:blur(6px);
-opacity:0.7;
-animation:torchGlow 2.6s ease-in-out infinite;
-}
-
-.torch-spark{
-position:absolute;
-bottom:72%;
-width:7px;
-height:7px;
-border-radius:50%;
-background:radial-gradient(circle, rgba(255,240,180,0.95) 0%, rgba(255,177,73,0.82) 45%, rgba(255,120,0,0) 80%);
-pointer-events:none;
-opacity:0;
-animation:torchSparkRise 2.8s linear infinite;
-z-index:2;
 }
 
 @keyframes girarCarta{
@@ -720,34 +654,6 @@ filter:brightness(1);
 }
 }
 
-@keyframes torchGlow{
-0%{
-transform:translateX(-50%) scale(0.92);
-opacity:0.5;
-}
-50%{
-transform:translateX(-50%) scale(1.08);
-opacity:0.95;
-}
-100%{
-transform:translateX(-50%) scale(0.94);
-opacity:0.55;
-}
-}
-
-@keyframes torchSparkRise{
-0%{
-transform:translate(0,0) scale(0.5);
-opacity:0;
-}
-18%{
-opacity:0.95;
-}
-100%{
-transform:translate(var(--spark-dx),-70px) scale(var(--spark-scale));
-opacity:0;
-}
-}
 
 @keyframes cartaVencedora{
 0%{

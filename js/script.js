@@ -36,6 +36,10 @@ let jackpotDustIntervalId = null;
 let currentBetIndex = BET_DEFAULT_INDEX;
 let betToastTimeoutId = null;
 let betToastAnimationEndHandlerAttached = false;
+let gameInitialized = false;
+let loaderTransitionStarted = false;
+let serviceWorkerUpdateHandlerAttached = false;
+let serviceWorkerUpdateNoticeVisible = false;
 const trilhaSonora = new Audio("assets/audio/trilhasonora.mp3");
 const payoutCoinsSound = new Audio("assets/audio/payoutcoins.mp3");
 const coinClinkSound = new Audio("assets/audio/coin_clink.mp3");
@@ -63,7 +67,6 @@ const botaoGirar = document.querySelector(".btn-girar");
 const botaoAuto = document.querySelector(".btn-auto");
 const painelEl = document.querySelector(".painel");
 const temploEl = document.querySelector(".templo-bg");
-const tochas = Array.from(document.querySelectorAll(".torch"));
 const gameStageEl = document.getElementById("game-stage");
 const gameContainerEl = document.getElementById("game-container");
 
@@ -271,7 +274,9 @@ function alterarAposta(direcao){
 
 function atualizarBotaoPronto(){
     const prontoParaGirar = !girando && !aguardandoPagamento && !autoGiro && !jackpotEmAndamento && saldo >= SLOT_CONFIG.custoJogada;
-    botaoGirar.classList.toggle("spin-ready", prontoParaGirar);
+    if(botaoGirar){
+        botaoGirar.classList.toggle("spin-ready", prontoParaGirar);
+    }
 }
 
 function animarContadorCreditos(valorFinal){
@@ -340,29 +345,6 @@ function atualizarClasseTempleEye(carta, simbolo){
     carta.classList.toggle("temple-eye", simbolo === "templeEye");
 }
 
-function criarFaiscaTocha(tocha, indice){
-    const spark = document.createElement("div");
-    spark.className = "torch-spark";
-    spark.style.left = `${42 + (Math.random() * 16)}%`;
-    spark.style.animationDelay = `${indice * 0.9 + Math.random() * 0.6}s`;
-    spark.style.animationDuration = `${2.4 + Math.random() * 1.2}s`;
-    spark.style.setProperty("--spark-dx", `${Math.random() * 28 - 14}px`);
-    spark.style.setProperty("--spark-scale", `${0.7 + Math.random() * 0.9}`);
-    tocha.appendChild(spark);
-}
-
-function inicializarTochasVivas(){
-    tochas.forEach((tocha) => {
-        if(!tocha || tocha.querySelector(".torch-spark")){
-            return;
-        }
-
-        for(let i = 0; i < 7; i++){
-            criarFaiscaTocha(tocha, i);
-        }
-    });
-}
-
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
     const now = Date.now();
@@ -412,7 +394,7 @@ function atualizarHUD(){
     if(jackpotEl){
         jackpotEl.innerText = formatarMoedaBRL(getJackpotAmount());
     }
-    if(!aguardandoPagamento){
+    if(!aguardandoPagamento && ganhoEl){
         ganhoEl.innerText = "0";
     }
     atualizarBotaoPronto();
@@ -423,19 +405,27 @@ function mostrarAvisoCreditos(){
 }
 
 function mostrarAviso(texto){
-    avisoEl.innerText = texto;
-    avisoEl.classList.add("ativo");
-    botaoGirar.classList.remove("erro");
-    void botaoGirar.offsetWidth;
-    botaoGirar.classList.add("erro");
+    if(avisoEl){
+        avisoEl.innerText = texto;
+        avisoEl.classList.add("ativo");
+    }
+    if(botaoGirar){
+        botaoGirar.classList.remove("erro");
+        void botaoGirar.offsetWidth;
+        botaoGirar.classList.add("erro");
+    }
 
     if(avisoTimeoutId){
         window.clearTimeout(avisoTimeoutId);
     }
 
     avisoTimeoutId = window.setTimeout(() => {
-        avisoEl.classList.remove("ativo");
-        botaoGirar.classList.remove("erro");
+        if(avisoEl){
+            avisoEl.classList.remove("ativo");
+        }
+        if(botaoGirar){
+            botaoGirar.classList.remove("erro");
+        }
         avisoTimeoutId = null;
     }, 2000);
 }
@@ -461,9 +451,13 @@ function setEstadoAutoGiro(ativo){
         return;
     }
     autoGiro = ativo;
-    botaoAuto.classList.toggle("ativo", ativo);
-    botaoGirar.style.opacity = ativo ? "0.4" : "1";
-    botaoGirar.style.pointerEvents = ativo ? "none" : "auto";
+    if(botaoAuto){
+        botaoAuto.classList.toggle("ativo", ativo);
+    }
+    if(botaoGirar){
+        botaoGirar.style.opacity = ativo ? "0.4" : "1";
+        botaoGirar.style.pointerEvents = ativo ? "none" : "auto";
+    }
 }
 
 function limparEfeitosJackpot(){
@@ -475,10 +469,13 @@ function limparEfeitosJackpot(){
         window.clearInterval(jackpotDustIntervalId);
         jackpotDustIntervalId = null;
     }
-    painelEl.classList.remove("jackpot");
+    if(painelEl){
+        painelEl.classList.remove("jackpot");
+    }
     cartas.forEach((carta) => carta.classList.remove("jackpot"));
-    temploEl.classList.remove("templo-jackpot");
-    tochas.forEach((tocha) => tocha.classList.remove("jackpot"));
+    if(temploEl){
+        temploEl.classList.remove("templo-jackpot");
+    }
     if(jackpotMessageEl){
         jackpotMessageEl.classList.remove("ativo");
     }
@@ -538,12 +535,15 @@ function templeDust(){
 }
 
 function dispararJackpot(resultado){
-    painelEl.classList.add("jackpot");
+    if(painelEl){
+        painelEl.classList.add("jackpot");
+    }
     cartas.forEach((carta, indice) => {
         carta.classList.toggle("jackpot", !resultado || resultado.simbolos[indice] === "templeEye");
     });
-    temploEl.classList.add("templo-jackpot");
-    tochas.forEach((tocha) => tocha.classList.add("jackpot"));
+    if(temploEl){
+        temploEl.classList.add("templo-jackpot");
+    }
     if(jackpotMessageEl){
         jackpotMessageEl.classList.remove("ativo");
         void jackpotMessageEl.offsetWidth;
@@ -571,7 +571,9 @@ function jogar(){
     }
 
     limparEfeitosJackpot();
-    ganhoEl.innerText = "0";
+    if(ganhoEl){
+        ganhoEl.innerText = "0";
+    }
     saldo -= SLOT_CONFIG.custoJogada;
     salvarSaldo();
     atualizarHUD();
@@ -622,6 +624,13 @@ function girarCarta(index, tempo, simbolo, callback){
     }
 
     const img = carta.querySelector(".face");
+    if(!img){
+        if(typeof callback === "function"){
+            callback();
+        }
+        return;
+    }
+
     carta.classList.remove("stop3d");
     carta.classList.add("spin3d");
     carta.classList.add("girando");
@@ -647,8 +656,10 @@ function executarSequenciaJackpot(resultado){
     aguardandoPagamento = false;
     jackpotPendenteReset = false;
     setEstadoAutoGiro(false);
-    botaoGirar.style.pointerEvents = "none";
-    botaoGirar.style.opacity = "0.35";
+    if(botaoGirar){
+        botaoGirar.style.pointerEvents = "none";
+        botaoGirar.style.opacity = "0.35";
+    }
     atualizarBotaoPronto();
     dispararJackpot(resultado);
 
@@ -662,8 +673,10 @@ function executarSequenciaJackpot(resultado){
         atualizarHUD();
         limparEfeitosJackpot();
         jackpotEmAndamento = false;
-        botaoGirar.style.pointerEvents = "auto";
-        botaoGirar.style.opacity = autoGiro ? "0.4" : "1";
+        if(botaoGirar){
+            botaoGirar.style.pointerEvents = "auto";
+            botaoGirar.style.opacity = autoGiro ? "0.4" : "1";
+        }
         atualizarBotaoPronto();
     }, JACKPOT_ANIMATION_MS);
 }
@@ -674,7 +687,9 @@ function premiar(valor){
         aguardandoPagamento = false;
         girando = false;
         jackpotPendenteReset = false;
-        ganhoEl.innerText = "0";
+        if(ganhoEl){
+            ganhoEl.innerText = "0";
+        }
         mostrarAviso("PAGAMENTO BLOQUEADO");
 
         if(autoGiro){
@@ -693,6 +708,13 @@ function premiar(valor){
 }
 
 function transferirPremio(valor){
+    if(!ganhoEl){
+        aguardandoPagamento = false;
+        girando = false;
+        atualizarBotaoPronto();
+        return;
+    }
+
     ganhoEl.innerText = String(valor);
     tocarSomPayout();
 
@@ -740,6 +762,10 @@ function tocarSomFinalPagamento(){
 }
 
 function criarMoedaTransferencia(){
+    if(!ganhoEl || !creditosEl){
+        return;
+    }
+
     const ganho = ganhoEl.getBoundingClientRect();
     const creditos = creditosEl.getBoundingClientRect();
     const moeda = document.createElement("div");
@@ -887,7 +913,9 @@ if(betToastEl && !betToastAnimationEndHandlerAttached){
         if(event.animationName === "betToastInOut"){
             betToastEl.classList.remove("ativo");
             limparParticulasMensagemAposta();
-            betToastWrapperEl.style.display = "none";
+            if(betToastWrapperEl){
+                betToastWrapperEl.style.display = "none";
+            }
             betToastTimeoutId = null;
         }
     });
@@ -900,7 +928,12 @@ document.addEventListener('touchmove', function (event) {
     }
 }, { passive: false });
 
-window.onload = function(){
+function inicializarJogo(){
+    if(gameInitialized){
+        return;
+    }
+
+    gameInitialized = true;
     saldo = lerSaldoSalvo();
     creditosAnimados = saldo;
     if(window.localStorage.getItem("saldo") === null){
@@ -908,7 +941,6 @@ window.onload = function(){
     }else if(typeof window.sincronizarSaldoSessao === "function"){
         window.sincronizarSaldoSessao(saldo);
     }
-    inicializarTochasVivas();
     iniciarEmissorJackpot();
     atualizarControlesAposta();
     if(betToastWrapperEl){
@@ -918,20 +950,33 @@ window.onload = function(){
     aplicarEstadoCartas3D("stop3d");
     atualizarHUD();
     reconciliarEstadoExterno();
-};
+}
+
+window.addEventListener("load", inicializarJogo, { once: true });
 
 /* ===== LOADER TRANSITION ===== */
 
 window.addEventListener("load", () => {
+    if(loaderTransitionStarted){
+        return;
+    }
+
+    loaderTransitionStarted = true;
     const loader = document.getElementById("loader");
     const game = document.getElementById("game-container");
+
+    if(!loader){
+        return;
+    }
 
     setTimeout(() => {
 
         loader.style.opacity = "0";
 
-        game.style.opacity = "1";
-        game.style.transform = "scale(1)";
+        if(game){
+            game.style.opacity = "1";
+            game.style.transform = "scale(1)";
+        }
 
         setTimeout(() => {
             loader.style.display = "none";
@@ -979,7 +1024,8 @@ game.style.transform = `scale(${escala})`;
 window.addEventListener("resize", ajustarEscalaGame);
 window.addEventListener("load", ajustarEscalaGame);*/
 
-function verificarOrientacao(){
+function verificarOrientacaoLegadaInativa(){
+    return;
 
 if(window.innerHeight > window.innerWidth){
 
@@ -1004,31 +1050,86 @@ padding:40px;
 
 }
 
+function verificarOrientacao(){
+    const avisoId = "rotate-warning";
+    let aviso = document.getElementById(avisoId);
+
+    if(window.innerHeight > window.innerWidth){
+        if(!aviso){
+            aviso = document.createElement("div");
+            aviso.id = avisoId;
+            aviso.style.cssText = [
+                "position:fixed",
+                "inset:0",
+                "display:flex",
+                "justify-content:center",
+                "align-items:center",
+                "background:#000",
+                "color:#ffd66b",
+                "font-size:26px",
+                "font-family:serif",
+                "text-align:center",
+                "padding:40px",
+                "z-index:99999"
+            ].join(";");
+            aviso.textContent = "Gire o celular para jogar";
+            document.body.appendChild(aviso);
+        }
+        return;
+    }
+
+    if(aviso){
+        aviso.remove();
+    }
+}
+
 window.addEventListener("load", verificarOrientacao);
 window.addEventListener("resize", verificarOrientacao);
 
 
 // atualização do sw
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then(reg => {
+function registrarServiceWorkerUmaVez(){
+  if(!("serviceWorker" in navigator)){
+    return;
+  }
 
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
+  if(window.__slotServiceWorkerRegistrationPromise){
+    return;
+  }
 
-      newWorker.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          
-          mostrarAvisoAtualizacao(newWorker);
-
+  window.__slotServiceWorkerRegistrationPromise = navigator.serviceWorker.register("./sw.js").then(reg => {
+    if(!serviceWorkerUpdateHandlerAttached){
+      reg.addEventListener("updatefound", () => {
+        const newWorker = reg.installing;
+        if(!newWorker){
+          return;
         }
-      });
-    });
 
+        newWorker.addEventListener("statechange", () => {
+          if(newWorker.state === "installed" && navigator.serviceWorker.controller){
+            mostrarAvisoAtualizacao(newWorker);
+          }
+        });
+      });
+      serviceWorkerUpdateHandlerAttached = true;
+    }
+
+    console.log("Service Worker registrado");
+    return reg;
+  }).catch(erro => {
+    console.log("Erro SW:", erro);
   });
 }
 
+registrarServiceWorkerUmaVez();
+
 function mostrarAvisoAtualizacao(worker) {
+  if(serviceWorkerUpdateNoticeVisible){
+    return;
+  }
+
   const aviso = document.createElement('div');
+  serviceWorkerUpdateNoticeVisible = true;
   
   aviso.innerHTML = `
     <div style="
@@ -1059,11 +1160,16 @@ function mostrarAvisoAtualizacao(worker) {
 
   document.body.appendChild(aviso);
 
-  document.getElementById('btn-update').onclick = () => {
-    worker.postMessage('SKIP_WAITING');
-  };
+  const botaoAtualizar = document.getElementById('btn-update');
+  if(botaoAtualizar){
+    botaoAtualizar.onclick = () => {
+      worker.postMessage('SKIP_WAITING');
+    };
+  }
 }
 
-navigator.serviceWorker.addEventListener('controllerchange', () => {
-  window.location.reload();
-});
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
+}

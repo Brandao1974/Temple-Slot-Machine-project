@@ -1,57 +1,73 @@
-const CACHE_NAME = 'templo-cache-' + Date.now();
+const CACHE_NAME = `templo-cache-${Date.now()}`;
+console.log("Cache version:", CACHE_NAME);
 
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/css/mobile/mobile-layout.css',
-  '/script.js',
-  '/engine/slotConfig.js',
-  '/engine/slotEngine.js'
+  './',
+  './index.html',
+  './css/style.css',
+  './css/mobile/mobile-layout.css',
+  './js/script.js',
+  './engine/slotConfig.js',
+  './engine/slotEngine.js'
 ];
 
-// INSTALL (único e correto)
+// INSTALL
 self.addEventListener('install', event => {
   self.skipWaiting();
 
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache aberto');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// ACTIVATE (limpa versões antigas)
+// ACTIVATE
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys
           .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
-      );
-    })
+      )
+    )
   );
 
   self.clients.claim();
 });
 
-// FETCH (cache primeiro, rede como fallback)
+// FETCH
 self.addEventListener('fetch', event => {
+
   if (event.request.method !== 'GET') return;
+
+  // Ignora extensões e requests inválidos
+  if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        return response || fetch(event.request);
+
+        if (response) return response;
+
+        return fetch(event.request)
+          .then(fetchResponse => {
+
+            // Ignora respostas inválidas
+            if (!fetchResponse || fetchResponse.status !== 200) {
+              return fetchResponse;
+            }
+
+            const responseClone = fetchResponse.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseClone);
+              });
+
+            return fetchResponse;
+          });
+
       })
   );
-});
-
-self.addEventListener('message', event => {
-  if (event.data === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });

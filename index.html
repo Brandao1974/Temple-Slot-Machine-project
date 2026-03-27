@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="css/desktop/desktop-layout.css">
 	<link rel="stylesheet" href="css/mobile/mobile-layout.css">
     <link rel="manifest" href="manifest.json">
+	<link rel="icon" href="assets/icon-192.png">
 </head>
 <body>
 
@@ -28,14 +29,6 @@
 
             <div id="game-ui">
                 <div class="templo-bg"></div>
-
-                <div class="torch torch-left">
-                    <div class="fogo"></div>
-                </div>
-
-                <div class="torch torch-right">
-                    <div class="fogo"></div>
-                </div>
 
                 <div class="container">
                     <div class="area-jogo">
@@ -119,22 +112,38 @@
     <script src="js/script.js"></script>
 	<script>
 function verificarOrientacao(){
+
+    let aviso = document.getElementById("rotate-warning");
+
     if(window.innerHeight > window.innerWidth){
-        document.body.innerHTML = `
-        <div style="
-        width:100vw;
-        height:100vh;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        background:#000;
-        color:#ffd66b;
-        font-size:24px;
-        text-align:center;
-        font-family:serif;
-        ">
-        🔄 Gire o celular para jogar
-        </div>`;
+
+        if(!aviso){
+            aviso = document.createElement("div");
+            aviso.id = "rotate-warning";
+            aviso.style.cssText = `
+                position:fixed;
+                inset:0;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                background:#000;
+                color:#ffd66b;
+                font-size:24px;
+                text-align:center;
+                font-family:serif;
+                z-index:99999;
+            `;
+
+            aviso.innerHTML = "🔄 Gire o celular para jogar";
+            document.body.appendChild(aviso);
+        }
+
+    } else {
+
+        if(aviso){
+            aviso.remove();
+        }
+
     }
 }
 
@@ -142,77 +151,12 @@ window.addEventListener("resize", verificarOrientacao);
 window.addEventListener("load", verificarOrientacao);
 </script>
 
-<!--script>
-const BASE_WIDTH = 1280;
-const BASE_HEIGHT = 720;
-
-function ajustarEscalaJogo(){
-
-    const container = document.getElementById("game-container");
-
-    const larguraTela = window.innerWidth;
-    const alturaTela = window.innerHeight;
-
-    const isMobile = larguraTela < 900;
-
-    let escala;
-
-    if(isMobile){
-        // MOBILE → usa largura + boost
-        escala = (larguraTela / BASE_WIDTH) * 1.2;
-    } else {
-        // DESKTOP → fit normal
-        const escalaX = larguraTela / BASE_WIDTH;
-        const escalaY = alturaTela / BASE_HEIGHT;
-        escala = Math.min(escalaX, escalaY);
-    }
-
-const larguraFinal = BASE_WIDTH * escala;
-const alturaFinal = BASE_HEIGHT * escala;
-
-if(larguraTela < 900){
-    // MOBILE → topo fixo + centralização real
-    container.style.transformOrigin = "top center";
-    container.style.transform = `translateX(-50%) scale(${escala})`;
-    container.style.left = "50%";
-    container.style.top = "0px";
-
-} else {
-    // DESKTOP → comportamento original
-    container.style.transformOrigin = "center center";
-    container.style.transform = `scale(${escala})`;
-    container.style.left = ((larguraTela - larguraFinal) / 2) + "px";
-    container.style.top = ((alturaTela - alturaFinal) / 2) + "px";
-}
-
-
-}
-
-window.addEventListener("resize", ajustarEscalaJogo);
-window.addEventListener("load", ajustarEscalaJogo);
-</script-->
-
 <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-    .then(() => console.log('Service Worker registrado'))
-    .catch(err => console.log('Erro SW:', err));
-}
+/* registro do Service Worker centralizado em js/script.js */
 </script>
 
 <script>
-window.addEventListener("load", () => {
-    const loader = document.getElementById("loader");
-
-    setTimeout(() => {
-        loader.style.opacity = "0";
-
-        setTimeout(() => {
-            loader.style.display = "none";
-        }, 500);
-
-    }, 300); // pequeno delay pra suavizar
-});
+/* transição do loader centralizada em js/script.js */
 </script>
 
 </body>

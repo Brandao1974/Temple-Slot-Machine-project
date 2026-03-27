@@ -53,8 +53,8 @@ to{ transform:rotate(360deg); }
 		
 
 .controles{
-top:19%;
-left:50%;
+top:36%;
+left:1%;
 transform: translate(-50%, -50%);
 width:70%;
 }
@@ -110,24 +110,7 @@ gap:20px;
         font-size: 25px;
     }
 	
-	.torch{
-position:absolute;
-top:-24%;
-width:9.4%;
-max-width:120px;
-pointer-events:none;
-z-index:3;
-}
-
-.torch-left{
-left:-28%;
-}
-
-.torch-right{
-right:70%;
-}
-	
-.msg-creditos{
+	.msg-creditos{
 position:absolute;
 left:33%;
 top:-200%;
@@ -136,23 +119,20 @@ margin:0;
 z-index:20;
 }
 	
-	
-	
-
  #game-background{
-height: 121%;
-width: 114vw;
-transform: translate(-50%, -7%);
+		height: 121%;
+        width: 114vw;
+        transform: translate(-50%, -48%);
 }
 
 #game-frame{
-position:absolute;
-height:47%;
-top:44%;
-transform:translate(-154%, -136%);
-width:48%;
-z-index:1;
-pointer-events:none;
+	position:absolute;
+	height:86%;
+	top:44%;
+	transform:translate(-113%, -95%);
+	width:630px;
+	z-index:1;
+	pointer-events:none;
    -webkit-mask-image: radial-gradient(circle at center, black 92%, transparent 100%);
     mask-image: radial-gradient(circle at center, black 92%, transparent 100%);
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
@@ -162,12 +142,12 @@ pointer-events:none;
 	.painel{
 		position: absolute;
         display: flex;
-        left: 177px;
-        top: 50%;
-        transform: translate(-53%, -39%);
-        width: 85%;
+        left: 186px;
+        top: -1%;
+        transform: translate(-55%, -39%);
+        width: 88%;
         padding: 0;
-        gap: 3%;
+        gap: 5%;
 }
 
 
@@ -178,5 +158,26 @@ pointer-events:none;
 	transform:translateY(0); /* base fixa */
 
 		}
+		
+		
+		#jackpot-container{
+				top:-43%;
+				left:18%;
+				transform:translate(-50%, -50%);
+				width:60%;
+				z-index:0;
+			}
+			
+			
+			#jackpot-placa{
+					width:180px;
+					}
+
+			#jackpot-valor{
+						top:52%;
+						left:19%;
+						transform:translateX(-50%);
+						font-size:26px;
+					}
 		
 }
