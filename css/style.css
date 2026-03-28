@@ -58,6 +58,28 @@ position:absolute;
 inset:0;
 }
 
+.slot-anchor{
+position:absolute;
+width:120px;
+height:160px;
+pointer-events:none;
+}
+
+#slot1{
+left:11.6%;
+top:36.5%;
+}
+
+#slot2{
+left:44.8%;
+top:36.5%;
+}
+
+#slot3{
+left:78%;
+top:36.5%;
+}
+
 .templo-bg{
 position:absolute;
 inset:0;
@@ -78,6 +100,15 @@ z-index:2;
 position:relative;
 width:100%;
 height:100%;
+}
+
+#flip-cards-canvas{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+pointer-events:none;
+z-index:4;
 }
 
 .painel{
@@ -299,62 +330,6 @@ animation:betToastInOut var(--bet-toast-duration, 3000ms) ease forwards;
 animation:betValuePulse 200ms ease-out;
 }
 
-.carta{
-position:relative;
-z-index:3;
-width:180px;
-height:250px;
-perspective:900px;
-flex-shrink:0;
-overflow:hidden;
-filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45));
-transform-style:preserve-3d;
-transition:transform 0.25s ease-out;
-will-change:transform;
-}
-
-.carta-inner{
-position:relative;
-width:100%;
-height:100%;
-display:flex;
-align-items:center;
-justify-content:center;
-border-radius:12px;
-background:linear-gradient(145deg, rgba(255,220,150,0.12), rgba(0,0,0,0.55));
-
-box-shadow:
-0 10px 18px rgba(0,0,0,0.65);
-
-transform-origin:center;
-transform-style:preserve-3d;
-transition:transform 0.6s ease-out;
-
-overflow:hidden;
-box-sizing:border-box;
-}
-
-.carta.girando .carta-inner{
-animation:girarCarta 0.25s linear infinite;
-}
-
-.carta.spin3d{
-transform:rotateY(40deg) scale(0.96);
-}
-
-.carta.stop3d{
-transform:rotateY(0deg) scale(1);
-}
-
-.carta img{
-width:100%;
-height:100%;
-display:block;
-object-fit:contain;
-border-radius:12px;
-filter:contrast(1.05) brightness(.95);
-}
-
 .controles{
 position:absolute;
 left:50%;
@@ -427,20 +402,6 @@ animation:tremer .3s;
 
 .painel.jackpot{
 animation:vibrarPainel 0.15s infinite;
-}
-
-.carta.jackpot{
-animation:pulsarCarta 0.7s ease-in-out infinite;
-}
-
-.carta.win{
-animation:cartaVencedora 0.8s ease-in-out 3;
-}
-
-.carta.temple-eye{
-filter:
-drop-shadow(0 0 10px rgba(101, 214, 255, 0.35))
-drop-shadow(0 0 18px rgba(101, 214, 255, 0.2));
 }
 
 .templo-jackpot{
@@ -530,11 +491,6 @@ background:radial-gradient(circle, rgba(255,220,120,0.95) 0%, rgba(255,200,80,0.
 pointer-events:none;
 z-index:50;
 animation:flashJackpot 0.6s ease-out forwards;
-}
-
-@keyframes girarCarta{
-0%{transform:rotateY(0deg);}
-100%{transform:rotateY(360deg);}
 }
 
 @keyframes vibrarPainel{
@@ -637,37 +593,6 @@ opacity:1;
 0%{transform:scale(1);}
 50%{transform:scale(1.08);}
 100%{transform:scale(1);}
-}
-
-@keyframes pulsarCarta{
-0%{
-transform:scale(1);
-filter:brightness(1);
-}
-50%{
-transform:scale(1.1);
-filter:brightness(1.6);
-}
-100%{
-transform:scale(1);
-filter:brightness(1);
-}
-}
-
-
-@keyframes cartaVencedora{
-0%{
-transform:translateY(0) scale(1);
-filter:brightness(1);
-}
-50%{
-transform:translateY(-10px) scale(1.06);
-filter:brightness(1.25);
-}
-100%{
-transform:translateY(0) scale(1);
-filter:brightness(1);
-}
 }
 
 @keyframes spinReady{

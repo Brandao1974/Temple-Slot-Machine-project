@@ -5,6 +5,22 @@ const JACKPOT_ANIMATION_MS = 4800;
 const CARD_ASSET_BY_SYMBOL = {
     templeEye: "olhodotemplo"
 };
+const CARD_CANVAS_ID = "flip-cards-canvas";
+const CARD_LAYOUT_DESKTOP = [
+    { x: 540, y: 350 },
+    { x: 690, y: 350 },
+    { x: 840, y: 350 }
+];
+const CARD_LAYOUT_MOBILE = [
+    { x: 335, y: 356 },
+    { x: 565, y: 356 },
+    { x: 800, y: 356 }
+];
+const CARD_SPIN_PREVIEW_SYMBOLS = ["compass", "map", "idol", "relic", "crown", "gem"];
+const CARD_FINAL_REVEAL_LEAD_MS = 140;
+const CARD_SPIN_PREVIEW_INTERVAL_MS = 90;
+const PHONE_MAX_DEVICE_WIDTH = 540;
+const PHONE_MAX_DEVICE_HEIGHT = 960;
 const BET_LEVELS = [
     { label: "BAIXA", value: 0.25, maxWin: 50 },
     { label: "LEVE", value: 0.5, maxWin: 100 },
@@ -49,7 +65,13 @@ trilhaSonora.volume = 0.25;
 payoutCoinsSound.volume = 0.5;
 coinClinkSound.volume = 0.6;
 
-const cartas = Array.from(document.querySelectorAll(".carta"));
+const flipCardImageCache = new Map();
+let flipCards = [];
+let flipCanvas = null;
+let flipCtx = null;
+let flipAnimationFrameId = null;
+let flipCardBackImage = null;
+
 const creditosEl = document.getElementById("creditos");
 const apostaEl = document.getElementById("aposta");
 const ganhoEl = document.getElementById("ganho");
@@ -67,22 +89,13 @@ const botaoGirar = document.querySelector(".btn-girar");
 const botaoAuto = document.querySelector(".btn-auto");
 const painelEl = document.querySelector(".painel");
 const temploEl = document.querySelector(".templo-bg");
-const gameStageEl = document.getElementById("game-stage");
+const areaJogoEl = document.querySelector(".area-jogo");
 const gameContainerEl = document.getElementById("game-container");
-
-/*function ajustarEscala(){
-  //  if(!gameStageEl || !gameContainerEl){
-       return;
-    }
-
-    const scaleWidth = window.innerWidth / BASE_GAME_WIDTH;
-    const scaleHeight = window.innerHeight / BASE_GAME_HEIGHT;
-    const scale = Math.min(1, scaleWidth, scaleHeight);
-
-    gameContainerEl.style.transform = `scale(${scale})`;
-    gameStageEl.style.width = `${BASE_GAME_WIDTH * scale}px`;
-    gameStageEl.style.height = `${BASE_GAME_HEIGHT * scale}px`;
-}*/
+const slotAnchorEls = [
+    document.getElementById("slot1"),
+    document.getElementById("slot2"),
+    document.getElementById("slot3")
+];
 
 function salvarSaldo(){
     window.localStorage.setItem("saldo", String(saldo));
@@ -121,6 +134,142 @@ function getCurrentBetLevel(){
 
 function getCardAssetName(simbolo){
     return CARD_ASSET_BY_SYMBOL[simbolo] || simbolo;
+}
+
+function getFlipCardImage(assetName){
+    if(flipCardImageCache.has(assetName)){
+        return flipCardImageCache.get(assetName);
+    }
+
+    const image = new Image();
+    image.src = `assets/cartas/${assetName}.webp`;
+    flipCardImageCache.set(assetName, image);
+    return image;
+}
+
+function forEachFlipCard(callback){
+    flipCards.forEach((card, index) => {
+        if(card){
+            callback(card, index);
+        }
+    });
+}
+
+function getCardLayout(){
+    if(window.innerWidth >= 900 && areaJogoEl && slotAnchorEls.every(Boolean)){
+        const areaRect = areaJogoEl.getBoundingClientRect();
+        if(areaRect.width > 0 && areaRect.height > 0){
+            return slotAnchorEls.map((anchor) => {
+                const anchorRect = anchor.getBoundingClientRect();
+
+                return {
+                    x: ((anchorRect.left + (anchorRect.width / 2) - areaRect.left) / areaRect.width) * BASE_GAME_WIDTH,
+                    y: ((anchorRect.top + (anchorRect.height / 2) - areaRect.top) / areaRect.height) * BASE_GAME_HEIGHT
+                };
+            });
+        }
+    }
+
+    return window.innerWidth < 900 ? CARD_LAYOUT_MOBILE : CARD_LAYOUT_DESKTOP;
+}
+
+function atualizarLayoutFlipCards(){
+    const layout = getCardLayout();
+
+    forEachFlipCard((card, index) => {
+        const position = layout[index] || CARD_LAYOUT_DESKTOP[index];
+        if(!position){
+            return;
+        }
+
+        card.x = position.x;
+        card.y = position.y;
+    });
+}
+
+function isPhoneResolution(){
+    const screenWidth = window.screen && window.screen.width ? window.screen.width : window.innerWidth;
+    const screenHeight = window.screen && window.screen.height ? window.screen.height : window.innerHeight;
+    const shortestSide = Math.min(screenWidth, screenHeight);
+    const longestSide = Math.max(screenWidth, screenHeight);
+
+    return shortestSide <= PHONE_MAX_DEVICE_WIDTH && longestSide <= PHONE_MAX_DEVICE_HEIGHT;
+}
+
+function aplicarOrientacaoHorizontalMobile(){
+    if(!isPhoneResolution()){
+        return;
+    }
+
+    if(
+        !window.screen ||
+        !window.screen.orientation ||
+        typeof window.screen.orientation.lock !== "function"
+    ){
+        return;
+    }
+
+    const orientationType = String(window.screen.orientation.type || "");
+    if(orientationType.startsWith("landscape")){
+        return;
+    }
+
+    window.screen.orientation.lock("landscape").catch(() => {});
+}
+
+function ensureFlipCanvas(){
+    if(flipCanvas || !areaJogoEl){
+        return;
+    }
+
+    flipCanvas = document.createElement("canvas");
+    flipCanvas.id = CARD_CANVAS_ID;
+    flipCanvas.width = BASE_GAME_WIDTH;
+    flipCanvas.height = BASE_GAME_HEIGHT;
+    flipCanvas.setAttribute("aria-hidden", "true");
+    areaJogoEl.appendChild(flipCanvas);
+    flipCtx = flipCanvas.getContext("2d");
+}
+
+function inicializarFlipCards(){
+    ensureFlipCanvas();
+    if(!flipCtx || flipCards.length){
+        return;
+    }
+
+    flipCardBackImage = getFlipCardImage("card_back");
+    flipCards = getCardLayout().map((position, index) => new FlipCard(
+        flipCtx,
+        position.x,
+        position.y,
+        getFlipCardImage(["compass", "map", "idol"][index] || "card_back"),
+        flipCardBackImage
+    ));
+
+    atualizarLayoutFlipCards();
+}
+
+function iniciarLoopFlipCards(){
+    if(flipAnimationFrameId || !flipCtx){
+        return;
+    }
+
+    const render = () => {
+        if(!flipCtx || !flipCanvas){
+            flipAnimationFrameId = null;
+            return;
+        }
+
+        const now = Date.now();
+        flipCtx.clearRect(0, 0, flipCanvas.width, flipCanvas.height);
+        forEachFlipCard((card) => {
+            card.update(now);
+            card.draw(now);
+        });
+        flipAnimationFrameId = window.requestAnimationFrame(render);
+    };
+
+    render();
 }
 
 function getJackpotAmount(){
@@ -320,29 +469,12 @@ function animarContadorCreditos(valorFinal){
 }
 
 function limparCartasVencedoras(){
-    cartas.forEach((carta) => carta.classList.remove("win"));
+    forEachFlipCard((card) => card.setWinning(false));
 }
 
 function destacarCartasVencedoras(){
-    cartas.forEach((carta) => carta.classList.add("win"));
+    forEachFlipCard((card) => card.setWinning(true));
     window.setTimeout(limparCartasVencedoras, 1400);
-}
-
-function aplicarEstadoCartas3D(classeAtiva){
-    cartas.forEach((carta) => {
-        carta.classList.remove("spin3d", "stop3d");
-        if(classeAtiva){
-            carta.classList.add(classeAtiva);
-        }
-    });
-}
-
-function atualizarClasseTempleEye(carta, simbolo){
-    if(!carta){
-        return;
-    }
-
-    carta.classList.toggle("temple-eye", simbolo === "templeEye");
 }
 
 let lastTouchEnd = 0;
@@ -472,7 +604,7 @@ function limparEfeitosJackpot(){
     if(painelEl){
         painelEl.classList.remove("jackpot");
     }
-    cartas.forEach((carta) => carta.classList.remove("jackpot"));
+    forEachFlipCard((card) => card.resetEffects());
     if(temploEl){
         temploEl.classList.remove("templo-jackpot");
     }
@@ -538,8 +670,10 @@ function dispararJackpot(resultado){
     if(painelEl){
         painelEl.classList.add("jackpot");
     }
-    cartas.forEach((carta, indice) => {
-        carta.classList.toggle("jackpot", !resultado || resultado.simbolos[indice] === "templeEye");
+    forEachFlipCard((card, indice) => {
+        const templeEye = !resultado || resultado.simbolos[indice] === "templeEye";
+        card.setJackpot(templeEye);
+        card.setTempleEye(templeEye);
     });
     if(temploEl){
         temploEl.classList.add("templo-jackpot");
@@ -583,9 +717,9 @@ function jogar(){
     const resultado = SLOT_ENGINE.girar();
     const { simbolos, premio } = resultado;
 
-    girarCarta(0, 900, simbolos[0], () => {
-        girarCarta(1, 1400, simbolos[1], () => {
-            girarCarta(2, 1900, simbolos[2], () => {
+    girarCarta(0, 800, simbolos[0], () => {
+        girarCarta(1, 900, simbolos[1], () => {
+            girarCarta(2, 1000, simbolos[2], () => {
                 if(resultado.triggeredJackpot){
                     executarSequenciaJackpot(resultado);
                     return;
@@ -615,36 +749,43 @@ function jogar(){
 }
 
 function girarCarta(index, tempo, simbolo, callback){
-    const carta = cartas[index];
-    if(!carta){
-        if(typeof callback === "function"){
+    const card = flipCards[index];
+
+    if(!card){
+        if(callback){
             callback();
         }
         return;
     }
 
-    const img = carta.querySelector(".face");
-    if(!img){
-        if(typeof callback === "function"){
-            callback();
-        }
-        return;
-    }
+    const previewSymbols = CARD_SPIN_PREVIEW_SYMBOLS.filter((item) => item !== simbolo);
+    const fallbackPreview = previewSymbols.length ? previewSymbols : CARD_SPIN_PREVIEW_SYMBOLS;
+    let previewIndex = index % fallbackPreview.length;
+    const aplicarPreview = () => {
+        const previewSymbol = fallbackPreview[previewIndex % fallbackPreview.length];
+        previewIndex += 1;
+        card.setFrontImage(getFlipCardImage(getCardAssetName(previewSymbol)));
+    };
+    const revealDelay = Math.max(0, tempo - CARD_FINAL_REVEAL_LEAD_MS);
 
-    carta.classList.remove("stop3d");
-    carta.classList.add("spin3d");
-    carta.classList.add("girando");
+    aplicarPreview();
+    const previewIntervalId = window.setInterval(aplicarPreview, CARD_SPIN_PREVIEW_INTERVAL_MS);
+    card.setJackpot(false);
+    card.setTempleEye(false);
+    card.setWinning(false);
+    card.start(tempo);
 
     window.setTimeout(() => {
-        carta.classList.remove("girando");
-        carta.classList.remove("spin3d");
-        carta.classList.add("stop3d");
-        img.src = `assets/cartas/${getCardAssetName(simbolo)}.webp`;
-        atualizarClasseTempleEye(carta, simbolo);
-        window.setTimeout(() => {
-            carta.classList.remove("stop3d");
-        }, 220);
-        if(typeof callback === "function"){
+        window.clearInterval(previewIntervalId);
+        card.setFrontImage(getFlipCardImage(getCardAssetName(simbolo)));
+        card.setTempleEye(simbolo === "templeEye");
+    }, revealDelay);
+
+    window.setTimeout(() => {
+        window.clearInterval(previewIntervalId);
+        card.setFrontImage(getFlipCardImage(getCardAssetName(simbolo)));
+        card.setTempleEye(simbolo === "templeEye");
+        if(callback){
             callback();
         }
     }, tempo);
@@ -934,6 +1075,7 @@ function inicializarJogo(){
     }
 
     gameInitialized = true;
+    aplicarOrientacaoHorizontalMobile();
     saldo = lerSaldoSalvo();
     creditosAnimados = saldo;
     if(window.localStorage.getItem("saldo") === null){
@@ -947,7 +1089,9 @@ function inicializarJogo(){
         betToastWrapperEl.style.display = "none";
     }
     ajustarEscala();
-    aplicarEstadoCartas3D("stop3d");
+    inicializarFlipCards();
+    atualizarLayoutFlipCards();
+    iniciarLoopFlipCards();
     atualizarHUD();
     reconciliarEstadoExterno();
 }
@@ -1000,91 +1144,15 @@ const escalaY = alturaTela / 720;
 const escala = Math.min(escalaX, escalaY);
 
 stage.style.transform = "scale(" + escala + ")";
+atualizarLayoutFlipCards();
 }
 
 window.addEventListener("resize", ajustarEscala);
 window.addEventListener("load", ajustarEscala);
-
-/*function ajustarEscalaGame(){
-
-const game = document.getElementById("game-container");
-if(!game) return;
-
-const larguraTela = window.innerWidth;
-const alturaTela = window.innerHeight;
-
-const escalaX = larguraTela / 1280;
-const escalaY = alturaTela / 720;
-
-const escala = Math.min(escalaX, escalaY);
-
-game.style.transform = `scale(${escala})`;
-}
-
-window.addEventListener("resize", ajustarEscalaGame);
-window.addEventListener("load", ajustarEscalaGame);*/
-
-function verificarOrientacaoLegadaInativa(){
-    return;
-
-if(window.innerHeight > window.innerWidth){
-
-document.body.innerHTML = `
-<div style="
-width:100vw;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:#000;
-color:#ffd66b;
-font-size:26px;
-font-family:serif;
-text-align:center;
-padding:40px;
-">
-🔄 Gire o celular para jogar
-</div>`;
-
-}
-
-}
-
-function verificarOrientacao(){
-    const avisoId = "rotate-warning";
-    let aviso = document.getElementById(avisoId);
-
-    if(window.innerHeight > window.innerWidth){
-        if(!aviso){
-            aviso = document.createElement("div");
-            aviso.id = avisoId;
-            aviso.style.cssText = [
-                "position:fixed",
-                "inset:0",
-                "display:flex",
-                "justify-content:center",
-                "align-items:center",
-                "background:#000",
-                "color:#ffd66b",
-                "font-size:26px",
-                "font-family:serif",
-                "text-align:center",
-                "padding:40px",
-                "z-index:99999"
-            ].join(";");
-            aviso.textContent = "Gire o celular para jogar";
-            document.body.appendChild(aviso);
-        }
-        return;
-    }
-
-    if(aviso){
-        aviso.remove();
-    }
-}
-
-window.addEventListener("load", verificarOrientacao);
-window.addEventListener("resize", verificarOrientacao);
+window.addEventListener("load", aplicarOrientacaoHorizontalMobile);
+window.addEventListener("resize", aplicarOrientacaoHorizontalMobile);
+document.addEventListener("touchstart", aplicarOrientacaoHorizontalMobile, { once: true, passive: true });
+document.addEventListener("click", aplicarOrientacaoHorizontalMobile, { once: true });
 
 
 // atualização do sw

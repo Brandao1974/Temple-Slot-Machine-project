@@ -4,34 +4,37 @@
     <meta charset="UTF-8">
     <title>Carta da Sorte</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta name="apple-mobile-web-app-title" content="Tesouro">
-	<link rel="stylesheet" href="css/base/layout.css">
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="css/desktop/desktop-layout.css">
-	<link rel="stylesheet" href="css/mobile/mobile-layout.css">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tesouro">
+    <link rel="stylesheet" href="css/base/layout.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/desktop/desktop-layout.css">
+    <link rel="stylesheet" href="css/mobile/mobile-layout.css">
     <link rel="manifest" href="manifest.json">
-	<link rel="icon" href="assets/icon-192.png">
+    <link rel="icon" href="assets/icon-192.png">
 </head>
 <body>
 
-	<div id="loader">
-		<img src="assets/icon-512.png" class="loader-icon">
-	</div>
-
+    <div id="loader">
+        <img src="assets/icon-512.png" class="loader-icon">
+    </div>
 
     <div id="game-stage">
         <div id="game-container">
-<img id="game-background" src="assets/temple_wall.webp" alt="">
-<img id="game-frame" src="assets/moldura-nova.webp" alt="">
+            <img id="game-background" src="assets/temple_wall.webp" alt="">
+            <img id="game-frame" src="assets/moldura-nova.webp" alt="">
 
             <div id="game-ui">
                 <div class="templo-bg"></div>
 
                 <div class="container">
                     <div class="area-jogo">
+                        <div class="slot-anchor" id="slot1"></div>
+                        <div class="slot-anchor" id="slot2"></div>
+                        <div class="slot-anchor" id="slot3"></div>
+
                         <div id="bet-toast-wrapper" class="bet-toast-wrapper" aria-live="polite">
                             <div id="bet-toast" class="bet-toast">
                                 <div class="bet-toast-particles" aria-hidden="true"></div>
@@ -50,7 +53,7 @@
                             <div class="placas">
                                 <div class="placa">
                                     <img src="assets/placa_creditos.png" alt="Placa de creditos">
-                                    <span id="creditos" class="numero">30</span>
+                                    <span id="creditos" class="numero numero-creditos">30</span>
                                 </div>
 
                                 <div class="bet-control">
@@ -60,7 +63,7 @@
 
                                     <div class="placa placa-aposta">
                                         <img src="assets/placa_aposta.png" alt="Placa de aposta">
-                                        <span id="aposta" class="numero">R$ 1,00</span>
+                                        <span id="aposta" class="numero numero-aposta">R$ 1,00</span>
                                     </div>
 
                                     <button id="bet-plus" class="bet-btn" type="button" aria-label="Aumentar aposta">
@@ -70,25 +73,7 @@
 
                                 <div class="placa">
                                     <img src="assets/placa_ganho.png" alt="Placa de ganho">
-                                    <span id="ganho" class="numero">0</span>
-                                </div>
-                            </div>
-
-                            <div class="carta">
-                                <div class="carta-inner">
-                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
-                                </div>
-                            </div>
-
-                            <div class="carta">
-                                <div class="carta-inner">
-                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
-                                </div>
-                            </div>
-
-                            <div class="carta">
-                                <div class="carta-inner">
-                                    <img class="face" src="assets/cartas/card_back.webp" alt="Carta fechada">
+                                    <span id="ganho" class="numero numero-ganho">0</span>
                                 </div>
                             </div>
                         </div>
@@ -109,55 +94,16 @@
 
     <script src="engine/slotConfig.js"></script>
     <script src="engine/slotEngine.js"></script>
+    <script src="engine/flipCard.js"></script>
     <script src="js/script.js"></script>
-	<script>
-function verificarOrientacao(){
 
-    let aviso = document.getElementById("rotate-warning");
+    <script>
+    /* registro do Service Worker centralizado em js/script.js */
+    </script>
 
-    if(window.innerHeight > window.innerWidth){
-
-        if(!aviso){
-            aviso = document.createElement("div");
-            aviso.id = "rotate-warning";
-            aviso.style.cssText = `
-                position:fixed;
-                inset:0;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                background:#000;
-                color:#ffd66b;
-                font-size:24px;
-                text-align:center;
-                font-family:serif;
-                z-index:99999;
-            `;
-
-            aviso.innerHTML = "🔄 Gire o celular para jogar";
-            document.body.appendChild(aviso);
-        }
-
-    } else {
-
-        if(aviso){
-            aviso.remove();
-        }
-
-    }
-}
-
-window.addEventListener("resize", verificarOrientacao);
-window.addEventListener("load", verificarOrientacao);
-</script>
-
-<script>
-/* registro do Service Worker centralizado em js/script.js */
-</script>
-
-<script>
-/* transição do loader centralizada em js/script.js */
-</script>
+    <script>
+    /* transicao do loader centralizada em js/script.js */
+    </script>
 
 </body>
 </html>
